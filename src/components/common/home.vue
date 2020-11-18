@@ -1,11 +1,9 @@
 <template>
     <div class="wrapper">
-        <!-- <v-header></v-header>
-        <v-sidebar></v-sidebar> -->
         <div class='sideBar'>
             <v-sidebar></v-sidebar>
         </div>
-        <div id="all-show" class="content-box" :class="{'content-collapse':collapse}">
+        <div class="content-box" :class="{'content-collapse':collapse}">
             <v-header></v-header>
             <v-tag></v-tag>
             <div :class=" contentShow ? 'contentFixed': 'content'">
@@ -76,6 +74,8 @@ export default {
 <style scoped>
 .wrapper{
     height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     width: 100%;
 }
 .sideBar{
@@ -84,7 +84,6 @@ export default {
 }
 .content-box{
   left: 250px;
-  /* top: 60px; */
   width: calc(100%-250px);
   height: 820px;
   -webkit-transition: left .3s ease-in-out;

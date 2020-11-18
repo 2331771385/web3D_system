@@ -44,16 +44,24 @@
                 <el-button 
                     icon="el-icon-search"
                     @click="searchVal"
+                    class="btn"
                 >
                 </el-button>
+
+                <!-- 点击搜索按钮，出现输入框 -->
+                
+
                 <!-- 全屏 -->
                 <template>
-                    <el-button v-if="!fullScreenShow">
+                    <el-button 
+                        v-if="!fullScreenShow"
+                        @click="fullScreen" 
+                    >
                         <i class="fa fa-expand" aria-hidden="true"></i>
                     </el-button>
                     
                     <!-- 退出全屏 -->
-                    <el-button v-else>
+                    <el-button v-else @click="fullScreen" >
                         <i class="fa fa-compress" aria-hidden="true"></i>
                     </el-button>
                 
@@ -100,6 +108,8 @@ export default {
    name:'header',
    data() {
        return {
+           flag:false,
+           fullscreen:false,
           fullScreenShow:false,
           sfShow:false,
           recentLoginName:'admin',
@@ -109,7 +119,6 @@ export default {
        }
    }, 
    created() {
-       
    },
    watch: {
        showIcon:function(newVal,oldVal){
@@ -119,7 +128,8 @@ export default {
    mounted() {
        vueEvent.$on('getBread',(value1,value2)=>{
            this.breadcrumbList(value1,value2);
-       })   
+       })
+       
    },
    methods: {
        getMsg(){},
@@ -155,6 +165,40 @@ export default {
         searchVal(){
 
         },
+        
+        //全屏操作
+        fullScreen(){
+            this.fullScreenShow=!this.fullScreenShow;
+            let element = document.documentElement; //放大的元素,直接作用于id=all-show上，如果整个系统都需要放大，直接赋值document.documentElement。
+            if (this.fullscreen) {
+                //退出全屏
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitCancelFullScreen) {
+                    document.webkitCancelFullScreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            } else {
+                //进入全屏
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullScreen) {
+                    element.webkitRequestFullScreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                // IE11
+                    element.msRequestFullscreen();
+                }
+            }
+            this.fullscreen = !this.fullscreen;
+        },
+   },
+   beforeDestroy() {
+      
    },
 }
 </script>
@@ -217,6 +261,9 @@ export default {
     font-size: 20px;
     
 }
+.btn{
+    margin-left: 50%;
+}
 .el-dropdown-menu{
       margin-top: 15px;
       float: left;
@@ -237,5 +284,8 @@ export default {
 }
 .el-button{
     border: 1px solid #fff;
+}
+.el-button+.el-button {
+    margin-left: 0 !important;
 }
 </style>
