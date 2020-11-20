@@ -130,7 +130,7 @@ router.beforeEach((to, from, next) => {
   if (token) {
     next();
     Vue.prototype.$Notice.open({
-      title: '欢迎您!' + localStorage.getItem("UserName"),
+      title: '欢迎您!  ' + localStorage.getItem("UserName"),
       desc: '登录成功'
     });
     // //如果存在token的时候
