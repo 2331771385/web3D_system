@@ -85,6 +85,9 @@ export default {
                         {
                             index:'role',
                             title:'角色管理',
+                        },{
+                            index:'admin',
+                            title:'管理员设置'
                         }
                     ]
                 }

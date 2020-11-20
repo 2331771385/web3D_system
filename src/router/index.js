@@ -9,20 +9,29 @@ const freeRoute=[
     component: resolve => require(['../components/common/home.vue'], resolve),
     children:[
       {
-        path:'headIndex',
+        path:'/headIndex',
         name:"headIndex",
-        components:resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
+        component:resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
         meta: {
           title: '首页',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'role',
+        path:'/role',
         name:"role",
-        components:resolve => require(['../components/views/system/role.vue'], resolve),
+        component:resolve => require(['../components/views/system/role.vue'], resolve),
         meta: {
           title: '角色管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/admin',
+        name:"admin",
+        component:resolve => require(['../components/views/system/admin.vue'], resolve),
+        meta: {
+          title: '管理员设置',
           // icon:'el-icon-setting'
         }
       },

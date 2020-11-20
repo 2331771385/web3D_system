@@ -92,7 +92,7 @@ export default {
 }
 .contentFixed{
     margin-left: 60px;
-    margin-top: 5px;
+    /* margin-top: 5px; */
     height: 700px;
     
     background: #fff;
@@ -102,7 +102,7 @@ export default {
 }
 .content{
     margin-left: 250px;
-    margin-top: 5px;
+    /* margin-top: 5px; */
     height: 700px;
     
     background: #fff;
