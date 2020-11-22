@@ -16,6 +16,7 @@ const freeRoute = [
     path: '/login',
     // component: resolve => require(['../components/views/account/login.vue'], resolve)
     component: () => import("../components/views/account/login.vue")
+    
   },
   {
     path: '/',
