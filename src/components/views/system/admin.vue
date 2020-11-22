@@ -26,17 +26,19 @@
         <Table border :columns='columns' :data='dataList'>
             <template slot-scope="{row}" slot="State">
                 <font v-if="row.State==0" color='green'>正常</font>
-                <font v-else color='red'>暂停</font>
+                <font v-else-if="row.State==1" color='orange'>暂停</font>
+                <font v-else color='red'>删除</font>
             </template>
 
             <template slot-scope="{row,index}" slot="action">
-                <Button type="primary" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
+                <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
                 <font v-if="row.State==0">
-                    <Button type="error" size='small'  @click="deleteInfo(row,index)">停用</Button>
+                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
                 </font>
-                <font v-else>
-                    <Button type="success" size='small' @click="startInfo(row,index)">启用</Button>
+                <font v-else-if="row.State==1">
+                    <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
                 </font>
+                <Button type="error" size='small' @click="deleteRow(row,index)">删除</Button>
             </template>
         </Table>
 
@@ -66,13 +68,38 @@
             >
             </v-dialog>
         </template>
+
+        <!-- 删除弹框 -->
+        <template v-if="flagDelete">
+            <v-dialog
+                :deleteVisible='deleteVisible'
+                @deleteAdmin='deleteAdmin'
+                @deleteRowOne='deleteRowOne'
+            >
+
+            </v-dialog>
+        </template>
         
+        <!-- 修改操作 -->
         <template v-if="flagUpd">
             <v-dialog
+                :flagUpd='flagUpd'
                 :updateAdminVisible='updateAdminVisible'
-                :row='msg'
+                :row='form'
                 @updCancal='updCancal'
                 @updSuccess='updSuccess'
+            >
+            </v-dialog>
+        </template>
+
+        <!-- 添加操作 -->
+        <template v-if="flagAdd">
+            <v-dialog
+                :flagAdd='flagAdd'
+                :addVisible='addVisible'
+                :addRow='form'
+                @addSuccess='addSuccess'
+                @cancelAdd='cancelAdd'
             >
 
             </v-dialog>
@@ -83,6 +110,7 @@
 <script>
 import axios from 'axios';
 import vDialog from '../../dialog/admin-dialog.vue'
+import Axios from 'axios';
 export default {
     name:'admin',
     components:{
@@ -154,6 +182,17 @@ export default {
           flagStr:false,
           updateAdminVisible:false,
           flagUpd:false,
+          flagAdd:false,
+          addVisible:false,
+          deleteVisible:false,
+          flagDelete:false,
+          form:{
+              AdminID:'',
+              LoginName:'',
+              NickName:'',
+              password:'',
+              RoleID:''
+          }
         }
     },
     created() {
@@ -203,6 +242,13 @@ export default {
          */
         updateInfo(row,index){
             this.msg=row;
+            this.form={
+                AdminID:this.msg.AdminID,
+                LoginName:this.msg.LoginName,
+                NickName:this.msg.NickName,
+                password:'',
+                RoleID:this.msg.RoleID
+            };
             this.updateAdminVisible=true;
             this.flagUpd=true;
         },
@@ -211,13 +257,13 @@ export default {
             this.flagUpd=false;
         },
         updSuccess(data){
-            console.log(data);
             axios({
                 url:this.$store.state.UrlIP+'/admin/updateAdmin',
                 method:'get',
                 params:{
                     adminID:data.AdminID,
-                    nickName:data.NickName
+                    nickName:data.NickName,
+                    token:'886a'
                 }, 
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -239,11 +285,45 @@ export default {
             this.updateVisible=true;
             this.flagDel=true;
         },
+        deleteAdmin(index){
+            axios({
+                url:this.$store.state.UrlIP+'/admin/updateAdminState',
+                method:'get',
+                params:{
+                   adminId:this.msg.AdminID,
+                   state:index,
+                   token:'886a'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    })
+                    this.getAdminList();
+                    this.flagDelete=false;
+                    this.deleteVisible=false;
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
         /**
          * 由停用状态转换为正常态
          */
         deleteOne(row){
-            let index=row.State=='0'?'1':'0';
+            let index;
+            if (row.State=='0') {
+                index='1'
+            }else if (row.State=='1') {
+                index='0'
+            }else{
+                index='-1'
+            }
+            
             axios({
                 url:this.$store.state.UrlIP+'/admin/updateAdminState',
                 method:'get',
@@ -281,7 +361,10 @@ export default {
             this.updateVisible=false;
             this.flagDel=false;
         },
-
+        deleteRowOne(){
+            this.flagDelete=false;
+            this.deleteVisible=false;
+       },
         /**
          * 启用操作
          */
@@ -294,8 +377,56 @@ export default {
             this.startVisible=false;
             this.flagStr=false;
         },
+        //添加操作
         addInfo(){
+            this.form={
+                LoginName:'',
+                NickName:'',
+                password:'',
+                RoleID:'' 
+            }
+            this.flagAdd=true;
+            this.addVisible=true;
+        },
+        addSuccess(data){
+            axios({
+                url:this.$store.state.UrlIP+'/admin/insertAdmin',
+                method:'get',
+                params:{
+                    loginName:data.LoginName,
+                    nickName:data.NickName,
+                    passwordMD5:data.password,
+                    roleID:data.RoleID,
+                    token:'886a'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    })
+                    this.addVisible=false;
+                    this.flagAdd=false;
+                    this.getAdminList();
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+        //取消添加操作
+        cancelAdd(){
+            this.addVisible=false;
+            this.flagAdd=false;
+        },
 
+        // 删除某一行操作
+        deleteRow(row,index){
+            this.msg=row;
+            this.flagDelete=true;
+            this.deleteVisible=true;
         }
     },
 }
