@@ -3,10 +3,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-<<<<<<< HEAD
-import store from './store'
-import '../src/assets/common/css/common.css'
-=======
 import axios from "axios"
 import Vuex from "vuex"
 import store from "./store/index"
@@ -16,7 +12,6 @@ import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import md5 from 'js-md5'
 import cookies from 'vue-cookies'
->>>>>>> 12741ad670a2ef29454ec771912f816beeb2d089
 
 Vue.use(cookies)
 Vue.prototype.$md5 = md5
@@ -33,7 +28,7 @@ import ViewUI from 'view-design'
 import 'view-design/dist/styles/iview.css'
 Vue.use(ViewUI)
 
-import axios from 'axios'
+// import axios from 'axios'
 
 /* eslint-disable no-new */
 new Vue({

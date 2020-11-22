@@ -4,9 +4,6 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         UrlIP: "http://211.87.231.41:8089",//接口地址前缀
-<<<<<<< HEAD
-        
-=======
 
         Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : '',  // 存储token
         UserName: localStorage.getItem('UserName') ? localStorage.getItem('UserName') : '',                      // 用户名
@@ -95,7 +92,6 @@ const store = new Vuex.Store({
                 })
             })
         }
->>>>>>> 12741ad670a2ef29454ec771912f816beeb2d089
     }
 
 })

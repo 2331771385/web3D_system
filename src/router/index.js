@@ -23,30 +23,18 @@ const freeRoute = [
     component: resolve => require(['../components/common/home.vue'], resolve),
     children: [
       {
-<<<<<<< HEAD
         path:'/headIndex',
         name:"headIndex",
         component:resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
-=======
-        path: 'headIndex',
-        name: "headIndex",
-        components: resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
->>>>>>> 12741ad670a2ef29454ec771912f816beeb2d089
         meta: {
           title: '首页',
           // icon:'el-icon-setting'
         }
       },
       {
-<<<<<<< HEAD
         path:'/role',
         name:"role",
         component:resolve => require(['../components/views/system/role.vue'], resolve),
-=======
-        path: 'role',
-        name: "role",
-        components: resolve => require(['../components/views/system/role.vue'], resolve),
->>>>>>> 12741ad670a2ef29454ec771912f816beeb2d089
         meta: {
           title: '角色管理',
           // icon:'el-icon-setting'
@@ -145,6 +133,9 @@ const originalReplace = Router.prototype.replace
 Router.prototype.replace = function replace(location) {
   return originalReplace.call(this, location).catch(err => err)
 }
+
+
+
 // 路由守卫
 router.beforeEach((to, from, next) => {
   let token = localStorage.getItem('Authorization');

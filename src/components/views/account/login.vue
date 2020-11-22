@@ -225,11 +225,11 @@ export default {
                   UserName: this.form.loginName,
                   // PermissionList:this.permissionList
                 });
-                if (this.userToken) {
-                  this.$router.push("/headIndex");
-                } else {
-                  this.$router.replace("/login");
-                }
+                // if (this.userToken) {
+                //   this.$router.push("/headIndex");
+                // } else {
+                //   this.$router.replace("/login");
+                // }
               } else {
                 this.$Message.error(res.data.msg);
                 this.getValidateCode();
