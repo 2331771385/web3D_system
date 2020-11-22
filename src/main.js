@@ -3,14 +3,30 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+<<<<<<< HEAD
 import store from './store'
 import '../src/assets/common/css/common.css'
-
-Vue.config.productionTip = false
-
+=======
+import axios from "axios"
+import Vuex from "vuex"
+import store from "./store/index"
 import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(Element)
+import iView from 'iview'
+import 'iview/dist/styles/iview.css'
+import md5 from 'js-md5'
+import cookies from 'vue-cookies'
+>>>>>>> 12741ad670a2ef29454ec771912f816beeb2d089
+
+Vue.use(cookies)
+Vue.prototype.$md5 = md5
+Vue.config.productionTip = false
+
+Vue.use(Vuex);
+Vue.use(Element);
+Vue.use(iView);
+
+Vue.prototype.$axios = axios;
 
 // 使用view组件
 import ViewUI from 'view-design'
