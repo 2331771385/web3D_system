@@ -74,8 +74,48 @@ export default {
                 },
                 {
                     icon: 'el-icon-news',
-                    index: 'headIndex',
-                    title: '首页1'
+                    index: 'building',
+                    title: '建筑数据',
+                    children:[
+                        {
+                            index:'building-manage',
+                            title:'建筑数据管理'
+                        }
+                    ]
+                },
+                
+                {
+                    icon: 'el-icon-news',
+                    index: 'public',
+                    title: '公共服务数据',
+                    children:[
+                        {
+                            index:'public-manage',
+                            title:'公共服务数据管理'
+                        }
+                    ]
+                },
+                {
+                    icon: 'el-icon-news',
+                    index: 'path',
+                    title: '路径数据',
+                    children:[
+                        {
+                            index:'path-manage',
+                            title:'路径数据管理'
+                        }
+                    ]
+                },
+                {
+                    icon: 'el-icon-news',
+                    index: 'video',
+                    title: '监控设备数据',
+                    children:[
+                        {
+                            index:'video-manage',
+                            title:'监控设备数据管理'
+                        }
+                    ]
                 },
                 {
                     icon:'el-icon-setting',

@@ -4,9 +4,9 @@ import store from "../store";
 import iView from 'iview';
 
 Vue.use(Router)
-const whiteList = [
-  '/login'
-];
+// const whiteList = [
+//   '/login'
+// ];
 const freeRoute = [
   {
     path: '/',
@@ -19,7 +19,7 @@ const freeRoute = [
     
   },
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: resolve => require(['../components/common/home.vue'], resolve),
     children: [
@@ -29,6 +29,42 @@ const freeRoute = [
         component:resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
         meta: {
           title: '首页',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/building-manage',
+        name:"building-manage",
+        component:resolve => require(['../components/views/building/building-manage.vue'], resolve),
+        meta: {
+          title: '建筑数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/public-manage',
+        name:"public-manage",
+        component:resolve => require(['../components/views/public/public-manage.vue'], resolve),
+        meta: {
+          title: '公共服务数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/path-manage',
+        name:"path-manage",
+        component:resolve => require(['../components/views/path/path-manage.vue'], resolve),
+        meta: {
+          title: '路径数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/video-manage',
+        name:"video-manage",
+        component:resolve => require(['../components/views/video/video-manage.vue'], resolve),
+        meta: {
+          title: '监控设备数据管理',
           // icon:'el-icon-setting'
         }
       },
@@ -142,10 +178,10 @@ router.beforeEach((to, from, next) => {
   let token = localStorage.getItem('Authorization');
   if (token) {
     next();
-    Vue.prototype.$Notice.open({
-      title: '欢迎您!  ' + localStorage.getItem("UserName"),
-      desc: '登录成功'
-    });
+    // Vue.prototype.$Notice.open({
+    //   title: '欢迎您!  ' + localStorage.getItem("UserName"),
+    //   desc: '登录成功'
+    // });
     // //如果存在token的时候
     // if (to.path === '/login') {
     //   //如果是登录页面,就直接对他放行
@@ -204,6 +240,7 @@ router.beforeEach((to, from, next) => {
     //   }
     // }
   } else {
+    console.log('cuowu');
     //如果在白名单里面，就直接放行
     if (whiteList.indexOf(to.path) >= 0) {
       next()

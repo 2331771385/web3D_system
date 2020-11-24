@@ -110,7 +110,6 @@
 <script>
 import axios from 'axios';
 import vDialog from '../../dialog/admin-dialog.vue'
-import Axios from 'axios';
 export default {
     name:'admin',
     components:{

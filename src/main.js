@@ -12,6 +12,7 @@ import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import md5 from 'js-md5'
 import cookies from 'vue-cookies'
+import '../src/assets/common/css/common.css'
 
 Vue.use(cookies)
 Vue.prototype.$md5 = md5

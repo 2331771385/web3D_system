@@ -198,6 +198,7 @@ export default {
             .then((res) => {
               this.isShowLoading = false;
               if (res.data.code == 0) {
+                console.log(res.data.data);
                 if (this.form.checked) {
                   //如果勾选了记住密码选项，就调用设置cookie的方法,第三个参数是记住密码时长
                   this.setCookie(
@@ -209,27 +210,28 @@ export default {
                   this.clearCookie();
                 }
                 this.userToken = res.data.data.token; //将后台返回的token记录在用户token列表中
-                this.userId = res.data.data.roleID;
-                let authorization = res.data.data.authority;
-                let arr = [];
-                for (let key in authorization) {
-                  if (arr.indexOf(authorization[key]) == -1) {
-                    arr.push(authorization[key]);
-                  }
-                }
-                this.permissionList = arr;
-                this.changeLogin({
-                  Authorization: this.userToken,
-                  UserID: this.userId,
-                  PassWord: this.form.loginPassword,
-                  UserName: this.form.loginName,
-                  // PermissionList:this.permissionList
-                });
-                // if (this.userToken) {
-                //   this.$router.push("/headIndex");
-                // } else {
-                //   this.$router.replace("/login");
+                // this.userId = res.data.data.roleID;
+                // let authorization = res.data.data.authority;
+                // let arr = [];
+                // for (let key in authorization) {
+                //   if (arr.indexOf(authorization[key]) == -1) {
+                //     arr.push(authorization[key]);
+                //   }
                 // }
+                // this.permissionList = arr;
+                // this.changeLogin({
+                //   Authorization: this.userToken,
+                //   UserID: this.userId,
+                //   PassWord: this.form.loginPassword,
+                //   UserName: this.form.loginName,
+                //   // PermissionList:this.permissionList
+                // });
+                if (this.userToken) {
+                  console.log('要跳转的页面');
+                  this.$router.push("/home");
+                } else {
+                  this.$router.replace("/login");
+                }
               } else {
                 this.$Message.error(res.data.msg);
                 this.getValidateCode();
