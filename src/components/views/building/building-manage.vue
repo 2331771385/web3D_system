@@ -40,7 +40,7 @@
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
                 <font v-if="row.state==0">
-                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
+                    <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button>
                 </font>
                 <font v-else-if="row.state==1">
                     <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
@@ -58,6 +58,31 @@
             </Page>
         </template>
 
+
+        <!-- 修改操作 -->
+        <template v-if="updBuilding">
+            <v-dialog
+                :updVisible='updVisible'
+                :updRow='form'
+                :updBuilding='updBuilding'
+                :buildingSort='buildingSortList'
+            >
+
+            </v-dialog>
+        </template>
+        
+
+        <!-- 添加操作 -->
+        <template v-if="addBuilding">
+            <v-dialog
+                :addVisible='addVisible'
+                :addRow='form'
+                :addBuilding='addBuilding'
+            >
+
+            </v-dialog>
+        </template>
+        
     </div>
 </template>
 <script>
@@ -125,11 +150,24 @@ export default {
             currentPage:'1',
             pageSize:'10',
             totalCount:0,
-            search:''
+            search:'',
+            msg:'',
+            updVisible:false,
+            addBuilding:false,
+            addVisible:false,
+            updBuilding:false,
+            form:{
+                des:'',
+                buildName:'',
+                file:'',
+                buildType:'',
+                shortDes:''
+            }
         }
     },
     created() {
         this.getBuildingList();
+        this.getBuildingSort();
     },
     methods: {
         clickSub(){
@@ -157,33 +195,22 @@ export default {
                 if (res.data.code==0) {
                     this.dataList=res.data.data;
                     this.totalCount=res.data.respPage.totalCount
-                    res.data.data.forEach(item => {
-                        if (this.buildingSortList.length==0) {
-                            this.buildingSortList.push({
-                                id:item.buildTypeId,
-                                name:item.buildTypeName
-                            })
-                        }else{
-                            for(var i=0;i<this.buildingSortList.length;i++){
-                                if (this.buildingSortList[i].id===item.buildTypeId) {
-                                    break;
-                                }
-                            }
-                            if (i==this.buildingSortList.length) {
-                                this.buildingSortList.push({
-                                    id:item.buildTypeId,
-                                    name:item.buildTypeName
-                                })
-                            }
-                            
-                        }
-                    });
                 }
             }).catch(err=>{
                 console.log(err);
             })
         },
-        addInfo(){},
+        addInfo(){
+            this.addBuilding=true;
+            this.form={
+                des:'',
+                buildName:'',
+                file:'',
+                buildType:'',
+                shortDes:''
+            };
+            this.addVisible=true;
+        },
         /**
          * 改变页码
          */
@@ -197,8 +224,47 @@ export default {
         changePagesize(val){
             this.pageSize=val;
             this.getBuildingList();
-        }
+        },
+        updateInfo(row,index){
+            this.msg=row;
+            console.log(this.msg);
+            this.form={
+                des:this.msg.describe,
+                buildName:this.msg.buildName,
+                file:'',
+                buildType:this.msg.buildTypeName,
+                shortDes:this.msg.shortDes
+            };
+            this.updVisible=true;
+            this.updBuilding=true;
+        },
 
+        //获取建筑分类
+        getBuildingSort(){
+            axios({
+                url:this.$store.state.UrlIP+'/building/getTypeData',
+                method:'get',
+                params:{
+                    pageIndex:'1',
+                    pageSize:'10'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    res.data.data.forEach(item=>{
+                        this.buildingSortList.push({
+                            id:item.buildTypeId,
+                            name:item.buildTypeName
+                        })
+                    })
+                    
+                }
+            }).catch(error=>{
+                console.log(error);
+            })
+        },
     },
 }
 </script>
