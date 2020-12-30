@@ -40,6 +40,14 @@ const freeRoute = [
           title: '建筑数据管理',
           // icon:'el-icon-setting'
         }
+      },{
+        path:'/building-sort',
+        name:"building-sort",
+        component:resolve => require(['../components/views/building/building-sort.vue'], resolve),
+        meta: {
+          title: '建筑分类管理',
+          // icon:'el-icon-setting'
+        }
       },
       {
         path:'/public-manage',

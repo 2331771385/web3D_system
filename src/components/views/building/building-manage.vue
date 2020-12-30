@@ -7,10 +7,16 @@
         <!-- 搜索框 -->
         <div class='searchInput'>
             <div class="search-top">
+                <span class="search-box-text">校区:</span>
+                <Select v-model="campus" style="width:200px" clearable>
+                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
+                </Select>
+
                 <span class="search-box-text">建筑分类:</span>
-                <Select v-model="bsortVal" style="width:200px">
+                <Select v-model="bsortVal" style="width:200px" clearable>
                     <Option v-for="item in buildingSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
                 </Select>
+
                 <span class="search-box-text">模糊查询:</span>
                 <Input style="width:auto" 
                     v-model="search"
@@ -30,7 +36,11 @@
             <template slot-scope="{row}" slot="buildTypeName">
                 [{{row.buildTypeId}}] {{row.buildTypeName}}
             </template>
-
+            <template slot-scope="{row}" slot="updateTime">
+                <font v-if="row.updateTime==null || row.updateTime==undefined">-</font>
+                <font v-else>{{row.updateTime}}</font>
+            </template>
+            
             <template slot-scope="{row}" slot="state">
                 <font v-if="row.state==0" color='green'>正常</font>
                 <font v-else-if="row.state==1" color='orange'>暂停</font>
@@ -66,6 +76,9 @@
                 :updRow='form'
                 :updBuilding='updBuilding'
                 :buildingSort='buildingSortList'
+                :campusListArr='campusList'
+                @cancelUpd='cancelUpd'
+                @updSuccess='updSuccess'
             >
 
             </v-dialog>
@@ -78,6 +91,10 @@
                 :addVisible='addVisible'
                 :addRow='form'
                 :addBuilding='addBuilding'
+                :addBuildingSort="buildingSortList"
+                :campusList='campusList'
+                @addSuccess='addSuccess'
+                @cancelAdd='cancelAdd'
             >
 
             </v-dialog>
@@ -95,9 +112,11 @@ export default {
     },
     data() {
         return {
+            campus:'',
             bsortVal:'',
             buildingSortList:[],
             dataList:[],
+            campusList:[],
             columns:[
                 {
                     title:'id',
@@ -112,17 +131,30 @@ export default {
                     width:'150px',
                     align:'center'
                 },{
+                    title:'校区名称',
+                    key: 'campusName',
+                    //  minWidth:'90px',
+                    width:'150px',
+                    align:'center'
+                },{
                     title:'建筑分类',
                     slot: 'buildTypeName',
                     //  minWidth:'90px',
                     width:'150px',
                     align:'center'
                 },{
+                    title:'建筑描述',
+                    key: 'describe',
+                    tooltip:'true',
+                    //  minWidth:'90px',
+                    width:'300px',
+                    align:'center'
+                },{
                     title:'建筑简介',
                     key: 'shortDes',
                     //  minWidth:'90px',
                     tooltip:'true',//开启后，文本将不换行
-                    width:'300px',
+                    width:'150px',
                     align:'center'
                 },{
                     title:'图标',
@@ -131,9 +163,9 @@ export default {
                     align:'center'
                 },{
                     title:'修改时间',
-                    key: 'updateTime',
+                    slot: 'updateTime',
                     //  minWidth:'90px',
-                    width:'160px',
+                    
                     align:'center'
                 },{
                     title:'状态',
@@ -143,6 +175,7 @@ export default {
                     align:'center'
                 },{
                     title:'操作',
+                    width:'160px',
                     slot:'action',
                     align:'center'
                 }
@@ -161,13 +194,16 @@ export default {
                 buildName:'',
                 file:'',
                 buildType:'',
-                shortDes:''
+                buildId:'',
+                shortDes:'',
+                campusId:'',
+                buildTypeId:''
             }
         }
     },
     created() {
-        this.getBuildingList();
-        this.getBuildingSort();
+        // this.getBuildingSort();
+        this.getCampusList();
     },
     methods: {
         clickSub(){
@@ -177,12 +213,19 @@ export default {
          * 获取建筑物的列表数据
          */
         getBuildingList(){
-            this.buildingSortList=[];
+            if (this.campus==undefined || this.campus==null || this.campus=='') {
+                this.$Message['warning']({
+                        background: true,
+                        content:'请先选择校区！'
+                    });
+                    this.dataList=[];
+                return;
+            }
             axios({
                 url:this.$store.state.UrlIP+'/building/getData',
                 method:'get',
                 params:{
-                    campusId:'6',
+                    campusId:this.campus,
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
                     key:this.search,
@@ -193,13 +236,52 @@ export default {
                 }
             }).then(res=>{
                 if (res.data.code==0) {
+                    this.totalCount=res.data.respPage.totalCount;
+                    res.data.data.forEach(item=>{
+                        this.campusList.forEach(ele=>{
+                            if (ele.id==item.campusId) {
+                                item.campusName=ele.campusName;
+                            }
+                        })
+                    });
                     this.dataList=res.data.data;
-                    this.totalCount=res.data.respPage.totalCount
                 }
             }).catch(err=>{
                 console.log(err);
             })
         },
+
+        /**
+         * 获取校区信息
+         */
+        getCampusList(){
+            axios({
+                url:this.$store.state.UrlIP+'/campus/getData',
+                method:'get',
+                params:{
+                    pageIndex:'1',
+                    pageSize:'10'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    res.data.data.forEach(item=>{
+                        this.campusList.push({
+                            id:item.campusId,
+                            campusName:item.campusName
+                        })
+                    });
+                    this.campus=6;
+                    this.getBuildingList();
+                    this.getBuildingSort();
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+
         addInfo(){
             this.addBuilding=true;
             this.form={
@@ -207,7 +289,10 @@ export default {
                 buildName:'',
                 file:'',
                 buildType:'',
-                shortDes:''
+                shortDes:'',    
+                buildId:'',
+                campusId:'',
+                buildTypeId:''
             };
             this.addVisible=true;
         },
@@ -227,13 +312,16 @@ export default {
         },
         updateInfo(row,index){
             this.msg=row;
-            console.log(this.msg);
+            this.index=index;
             this.form={
                 des:this.msg.describe,
                 buildName:this.msg.buildName,
+                buildId:this.msg.buildId,
                 file:'',
                 buildType:this.msg.buildTypeName,
-                shortDes:this.msg.shortDes
+                shortDes:this.msg.shortDes,
+                campusId:this.msg.campusId,
+                buildTypeId:this.msg.buildTypeId
             };
             this.updVisible=true;
             this.updBuilding=true;
@@ -265,6 +353,78 @@ export default {
                 console.log(error);
             })
         },
+        /**
+         * 添加建筑信息
+         */
+        addSuccess(data){
+            axios({
+                url:this.$store.state.UrlIP+'/building/insertData',
+                method:'post',
+                params:{
+                    buildTypeId:data.buildTypeId,
+                    campusId:data.campusId,
+                    buildName:data.buildName,
+                    shortDes:data.shortDes,
+                    describe:data.des,
+                    file:'',
+                    token:'886a'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    })
+                    this.getBuildingList();
+                    this.addVisible=false;
+                    this.addBuilding=false;
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+        cancelAdd(){
+            this.addVisible=false;
+            this.addBuilding=false;
+        },
+        cancelUpd(){
+            this.updVisible=false;
+            this.updBuilding=false;
+        },
+        updSuccess(data,index){
+            axios({
+                url:this.$store.state.UrlIP+'/building/updateData',
+                method:'post',
+                params:{
+                    buildTypeId:data.buildTypeId,
+                    campusId:data.campusId,
+                    buildName:data.buildName,
+                    shortDes:data.shortDes,
+                    describe:data.des,
+                    buildId:data.buildId,
+                    file:'',
+                    token:'886a'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    })
+                    this.getBuildingList();
+                    this.updVisible=false;
+                    this.updBuilding=false;
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        }
     },
 }
 </script>

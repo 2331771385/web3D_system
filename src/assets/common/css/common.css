@@ -40,3 +40,6 @@
     text-align: left;
     margin-top: 5px;
 }
+.ivu-select-dropdown{
+    overflow: hidden !important;
+}

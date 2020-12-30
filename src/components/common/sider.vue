@@ -80,6 +80,9 @@ export default {
                         {
                             index:'building-manage',
                             title:'建筑数据管理'
+                        },{
+                            index:'building-sort',
+                            title:'建筑分类管理'
                         }
                     ]
                 },
