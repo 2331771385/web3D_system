@@ -2,7 +2,7 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon  type="ios-apps" size='22'/>
-            <p class="pageTitle">公共服务数据列表</p>
+            <p class="pageTitle">设备数据列表</p>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -76,46 +76,48 @@ export default {
                 {
                     title:'id',
                     key: 'deviceId',
-                    width:'100px',
+                    width:'60px',
                     align:'center'
                 },{
                     title:'设备名称',
                     key: 'deviceName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    minWidth:120,
                     align:'center'
                 },{
                     title:'设备分类',
                     slot: 'deviceTypeName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    minWidth:120,
                     align:'center'
                 },{
                     title:'图片',
                     key: 'picUrl',
                     //  minWidth:'90px',
-                    width:'200px',
+                    minWidth:150,
                     align:'center'
                 },{
                     title:'视频',
                     key: 'videoUrl',
                     tooltip:'true',
-                    width:'250px',
+                    minWidth:150,
                     align:'center'
                 },{
                     title:'修改时间',
+                    tooltip:'true',
                     slot: 'updateTime',
                     //  minWidth:'90px',
-                    width:'180px',
+                    minWidth:120,
                     align:'center'
                 },{
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
-                    width:'100px',
+                    width:'90px',
                     align:'center'
                 },{
                     title:'操作',
+                    width:'160px',
                     slot:'action',
                     align:'center'
                 }

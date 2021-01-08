@@ -2,7 +2,7 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon  type="ios-apps" size='22'/>
-            <p class="pageTitle">公共服务数据列表</p>
+            <span class="pageTitle">公共服务列表</span>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -81,7 +81,7 @@ export default {
                     title:'id',
                     key: 'serviceId',
                     //  minWidth:'90px',
-                    width:'100px',
+                    width:'60px',
                     align:'center'
                 },{
                     title:'公共服务名称',
@@ -93,39 +93,43 @@ export default {
                     title:'公共服务分类',
                     slot: 'serviceTypeName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    minWidth:110,
                     align:'center'
                 },{
                     title:'简介',
                     key: 'shortDes',
                     //  minWidth:'90px',
                     tooltip:'true',//开启后，文本将不换行
-                    width:'300px',
+                    width:'150px',
                     align:'center'
                 },{
                     title:'图标',
                     key: 'iconUrl',
-                    width:'200px',
+                    tooltip:'true',
+                    minWidth:130,
                     align:'center'
                 },{
                     title:'图片',
                     key: 'picUrl',
-                    width:'200px',
+                    minWidth:130,
+                    tooltip:'true',
                     align:'center'
                 },{
                     title:'修改时间',
                     slot: 'updateTime',
+                    tooltip:'true',
                     //  minWidth:'90px',
-                    width:'160px',
+                    minWidth:120,
                     align:'center'
                 },{
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
-                    width:'100px',
+                    width:'90px',
                     align:'center'
                 },{
                     title:'操作',
+                    width:'160px',
                     slot:'action',
                     align:'center'
                 }

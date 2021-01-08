@@ -1,8 +1,8 @@
 <template>
     <div class="tableContainer">
         <div class="table-label">
-            <Icon  type="ios-apps" size='22'/>
-            <p class="pageTitle">建筑数据列表</p>
+            <Icon type="ios-apps" size='22'/>
+            <span class="pageTitle">建筑数据列表</span>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -122,28 +122,28 @@ export default {
                     title:'id',
                     key: 'buildId',
                     //  minWidth:'90px',
-                    width:'70px',
+                    width:'60px',
                     align:'center',
                     className: 'test-name'
                 },{
                     title:'建筑名称',
                     key: 'buildName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    width:'120px',
                     align:'center',
                     className: 'test-name'
                 },{
                     title:'校区名称',
                     key: 'campusName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    width:'140px',
                     align:'center',
                     className: 'test-name'
                 },{
                     title:'建筑分类',
                     slot: 'buildTypeName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    width:'120px',
                     align:'center',
                     className: 'test-name'
                 },{
@@ -151,7 +151,7 @@ export default {
                     key: 'describe',
                     tooltip:'true',
                     //  minWidth:'90px',
-                    width:'150px',
+                    width:'140px',
                     align:'center',
                     className: 'test-name'
                 },{
@@ -165,21 +165,22 @@ export default {
                 },{
                     title:'图标',
                     key: 'iconUrl',
-                    width:'170px',
+                    minWidth:120,
+                    tooltip:'true',
                     align:'center',
                     className: 'test-name'
                 },{
                     title:'修改时间',
                     slot: 'updateTime',
-                    //  minWidth:'90px',
-                    
+                    minWidth:100,
+                    tooltip:'true',
                     align:'center',
                     className: 'test-name'
                 },{
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
-                    width:'100px',
+                    width:'90px',
                     align:'center',
                     className: 'test-name'
                 },{
@@ -438,7 +439,7 @@ export default {
     },
 }
 </script>
-<style>
+<style scoped>
 .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;

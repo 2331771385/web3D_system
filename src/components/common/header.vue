@@ -111,7 +111,10 @@ export default {
       levelList: [], //获取到的菜单对象
     };
   },
-  created() {},
+  created() {
+    this.recentLoginName=localStorage.getItem("UserName");
+    console.log(this.recentLoginName);
+  },
   watch: {
     showIcon: function (newVal, oldVal) {
       this.showIcon = newVal;

@@ -2,7 +2,7 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon  type="ios-apps" size='22'/>
-            <p class="pageTitle">建筑分类列表</p>
+            <span class="pageTitle">建筑分类列表</span>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -98,30 +98,31 @@ export default {
                 {
                     title:'id',
                     key: 'typeId',
-                    width:'100px',
+                    width:'60px',
                     align:'center'
                 },{
                     title:'建筑分类名称',
                     key: 'typeName',
-                    width:'250px',
+                    width:'150px',
                     align:'center'
                 },{
                     title:'创建时间',
                     slot: 'createTime',
-                    width:'250px',
+                    minWidth:100,
                     align:'center'
                 },{
                     title:'最后更新时间',
                     slot: 'updateTime',
-                    width:'300px',
+                    minWidth:100,
                     align:'center'
                 },{
                     title:'图标',
                     key: 'picture',
-                    width:'300px',
+                    minWidth:130,
                     align:'center'
                 },{
                     title:'操作',
+                    width:'160px',
                     slot:'action',
                     align:'center'
                 }

@@ -2,7 +2,7 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon type="ios-apps" size='22'/>
-            <p class="pageTitle">管理员列表</p>
+            <span class="pageTitle">管理员列表</span>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -122,48 +122,50 @@ export default {
                  title:'id',
                  key: 'AdminID',
                 //  minWidth:'90px',
-                 width:'100px',
+                 width:'60px',
                  align:'center'
               },
               {
                   title:'登陆账号',
                   key:'LoginName',
-                  width:'160px',
+                  width:'110px',
                   align:'center'
               },{
                   title:'昵称',
                   key:'NickName',
-                  width:'160px',
+                  minWidth:100,
                   align:'center'
               },{
                   title:'角色',
                   key:'RoleID',
-                  width:'160px',
+                  minWidth:120,
                   align:'center'
               },{
                   title:'IP地址',
                   key:'LastIPAddress',
-                  width:'190px',
+                  minWidth:150,
                   align:'center'
               },{
                   title:'创建时间',
+                  tooltip:'true',
                   key:'CreateTime',
-                  width:'190px',
+                  minWidth:120,
                   align:'center'
               },{
                   title:'最近登录时间',
+                  tooltip:'true',
                   key:'LastLoginTime',
-                  width:'190px',
+                  minWidth:120,
                   align:'center'
               },{
                   title:'状态',
                   slot:'State',
-                  width:'160px',
+                  width:'90px',
                   align:'center', 
               },{
                   title:'操作',
                   slot:'action',
-                //   minWidth:'200px',
+                  width:'200px',
                   align:'center',
               }
 
@@ -430,7 +432,7 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style>
 .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;

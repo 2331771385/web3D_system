@@ -2,7 +2,7 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon  type="ios-apps" size='22'/>
-            <p class="pageTitle">公共服务数据列表</p>
+            <span class="pageTitle">路径数据列表</span>
         </div>
         <!-- 搜索框 -->
         <div class='searchInput'>
@@ -76,8 +76,8 @@ export default {
                 },{
                     title:'修改时间',
                     key: 'updateTime',
-                    //  minWidth:'90px',
-                    width:'160px',
+                     minWidth:100,
+                    // width:'160px',
                     align:'center'
                 },{
                     title:'状态',
@@ -87,6 +87,7 @@ export default {
                     align:'center'
                 },{
                     title:'操作',
+                    width:'160px',
                     slot:'action',
                     align:'center'
                 }

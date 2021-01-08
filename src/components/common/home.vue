@@ -85,7 +85,7 @@ export default {
 .content-box{
   left: 250px;
   /* width: calc(100%-250px); */
-  height: 820px;
+  height: 700px;
   -webkit-transition: left .3s ease-in-out;
   transition: left .3s ease-in-out;
   background: #f0f0f0;
@@ -93,7 +93,7 @@ export default {
 .contentFixed{
     margin-left: 60px;
     /* margin-top: 5px; */
-    height: 700px;
+    height: 600px;
     
     background: #fff;
     border-bottom: 1px solid #d8dce5;
@@ -103,7 +103,7 @@ export default {
 .content{
     margin-left: 250px;
     /* margin-top: 5px; */
-    height: 700px;
+    height: 600px;
     
     background: #fff;
     border-bottom: 1px solid #d8dce5;

@@ -218,13 +218,13 @@ export default {
                 //   }
                 // }
                 // this.permissionList = arr;
-                // this.changeLogin({
-                //   Authorization: this.userToken,
-                //   UserID: this.userId,
-                //   PassWord: this.form.loginPassword,
-                //   UserName: this.form.loginName,
-                //   // PermissionList:this.permissionList
-                // });
+                this.changeLogin({
+                  Authorization: this.userToken,
+                  UserID: this.userId,
+                  PassWord: this.form.loginPassword,
+                  UserName: this.form.loginName,
+                  PermissionList:this.permissionList
+                });
                 if (this.userToken) {
                   this.$router.push("/home");
                 } else {
