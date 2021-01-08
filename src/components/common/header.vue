@@ -221,7 +221,7 @@ export default {
   top: 0;
   left: 60px;
   width: calc(100% - 60px);
-  height: 60px;
+  height: 50px;
 
   overflow: hidden;
   position: relative;
@@ -233,7 +233,7 @@ export default {
   top: 0;
   left: 250px;
   width: calc(100% - 250px);
-  height: 60px;
+  height: 50px;
 
   overflow: hidden;
   position: relative;
@@ -243,42 +243,42 @@ export default {
 }
 .el-left {
   height: 100%;
-  width: 70%;
+  width: 60%;
   float: left;
 }
 .el-right {
   height: 100%;
-  width: 30%;
+  width: 40%;
   float: right;
 }
 .el-right-drop {
   width: 20%;
-  height: 50px;
+  height: 40px;
   margin-top: 5px;
   float: left;
 }
 .el-right-icon {
   float: left;
   width: 80%;
-  height: 50px;
+  height: 40px;
   margin-top: 5px;
 }
 .el-icon {
-  height: 60px;
+  height: 50px;
   width: 60px;
   float: left;
 }
 .el-dropdown-link {
   display: block;
-  margin-top: 5px;
+  /* margin-top: 5px; */
   font-size: 20px;
 }
 .btn {
   margin-left: 50%;
 }
 .el-dropdown-menu {
-  margin-top: 15px;
-  float: left;
+  margin-top: 15px !important;
+  float: left !important;
 }
 .el-dropdown {
   margin-top: 5px;
@@ -288,8 +288,8 @@ export default {
   float: left;
   margin-top: 15px;
   margin-left: 40px;
-  height: 50px;
-  line-height: 50px;
+  height: 40px;
+  line-height: 40px;
 }
 .breadcrumb-text {
   font-size: 18px;

@@ -84,7 +84,7 @@ export default {
 }
 .content-box{
   left: 250px;
-  width: calc(100%-250px);
+  /* width: calc(100%-250px); */
   height: 820px;
   -webkit-transition: left .3s ease-in-out;
   transition: left .3s ease-in-out;

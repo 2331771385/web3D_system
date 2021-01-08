@@ -148,7 +148,7 @@ export default {
 </script>
 <style scoped>
 .ivu-icon-ios-apps{
-    float: left;
-    margin-top: 2px;
+    float: left !important;
+    margin-top: 2px !important;
 }
 </style>

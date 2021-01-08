@@ -122,62 +122,72 @@ export default {
                     title:'id',
                     key: 'buildId',
                     //  minWidth:'90px',
-                    width:'100px',
-                    align:'center'
+                    width:'70px',
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'建筑名称',
                     key: 'buildName',
                     //  minWidth:'90px',
                     width:'150px',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'校区名称',
                     key: 'campusName',
                     //  minWidth:'90px',
                     width:'150px',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'建筑分类',
                     slot: 'buildTypeName',
                     //  minWidth:'90px',
                     width:'150px',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'建筑描述',
                     key: 'describe',
                     tooltip:'true',
                     //  minWidth:'90px',
-                    width:'300px',
-                    align:'center'
+                    width:'150px',
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'建筑简介',
                     key: 'shortDes',
                     //  minWidth:'90px',
                     tooltip:'true',//开启后，文本将不换行
                     width:'150px',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'图标',
                     key: 'iconUrl',
-                    width:'200px',
-                    align:'center'
+                    width:'170px',
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'修改时间',
                     slot: 'updateTime',
                     //  minWidth:'90px',
                     
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
                     width:'100px',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'操作',
                     width:'160px',
                     slot:'action',
-                    align:'center'
+                    align:'center',
+                    className: 'test-name'
                 }
             ],
             currentPage:'1',
@@ -428,9 +438,12 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style>
 .ivu-icon-ios-apps{
-    float: left;
-    margin-top: 2px;
+    float: left !important;
+    margin-top: 2px !important;
+}
+.ivu-table th.test-name {
+    height: 30px !important;
 }
 </style>
