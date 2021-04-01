@@ -33,6 +33,15 @@ const freeRoute = [
         }
       },
       {
+        path:'/campus-manage',
+        name:"campus-manage",
+        component:resolve => require(['../components/views/campus/campus-manage.vue'], resolve),
+        meta: {
+          title: '校区数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
         path:'/building-manage',
         name:"building-manage",
         component:resolve => require(['../components/views/building/building-manage.vue'], resolve),

@@ -72,6 +72,19 @@ export default {
                     // index: 'home',
                     title: '首页'
                 },
+
+                {
+                    icon: 'el-icon-news',
+                    index: 'campus',
+                    title: '校区数据',
+                    children:[
+                        {
+                            index:'campus-manage',
+                            title:'校区数据管理'
+                        }
+                    ]
+                },
+
                 {
                     icon: 'el-icon-news',
                     index: 'building',
@@ -90,11 +103,11 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'public',
-                    title: '公共服务数据',
+                    title: '公共服务',
                     children:[
                         {
                             index:'public-manage',
-                            title:'公共服务数据管理'
+                            title:'公共服务管理'
                         }
                     ]
                 },
@@ -112,11 +125,11 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'video',
-                    title: '监控设备数据',
+                    title: '设备数据',
                     children:[
                         {
                             index:'video-manage',
-                            title:'监控设备数据管理'
+                            title:'监控数据管理'
                         }
                     ]
                 },

@@ -7,6 +7,11 @@
         <!-- 搜索框 -->
         <div class='searchInput'>
             <div class="search-top">
+                <span class="search-box-text">校区:</span>
+                <Select v-model="campus" style="width:200px" clearable>
+                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
+                </Select>
+
                 <span class="search-box-text">公共服务分类:</span>
                 <Select v-model="psortVal" 
                         style="width:200px" 
@@ -65,17 +70,115 @@
             >
             </Page>
         </template>
+
+
+        <!-- 新增公共服务项 -->
+        <template v-if="addPublic">
+            <v-dialog
+                :addVisible='addVisible'
+                :addRow='form'
+                :addPublic='addPublic'
+                :publicSortList="publicSortList"
+                :campusList='campusList'
+                @addSuccess='addSuccess'
+                @cancelAdd='cancelAdd'
+            >
+
+            </v-dialog>
+        </template>
+
+
+        <!-- 修改数据项 -->
+        <el-dialog  title="修改公共服务信息" :visible.sync="updateVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
+                <el-form-item label="校区名称:" >
+                    <el-select disabled v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.campusName"
+                            :value="item.id"
+                            
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="公共服务名称:" prop="serviceName">
+                    <el-input
+                        v-model="form.serviceName"
+                        placeholder="公共服务名称"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="公共服务类型:">
+                    <el-select v-model="form.serviceTypeId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in publicSortList"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="简介:">
+                    <el-input
+                        v-model="form.shortDes"
+                        placeholder="公共服务简介"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+                    
+                <el-form-item label="描述:" >
+                    <el-input
+                        v-model="form.describe"
+                        placeholder="公共服务描述"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+                <!-- 图标 -->
+                <el-form-item label="图标:" >
+                    <el-input
+                        v-model="form.label"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+                <!-- 图片 -->
+                <el-form-item label="图片:" >
+                    <el-input
+                        v-model="form.file"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="updateVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import vDialog from '../../dialog/public-dialog'
 export default {
     name:'public-manage',
+    components:{
+        vDialog
+    },
     data() {
         return {
+            campus:'',
             psortVal:'',
             publicSortList:[],
             dataList:[],
+            campusList:[],
             columns:[
                 {
                     title:'id',
@@ -137,7 +240,27 @@ export default {
             currentPage:'1',
             pageSize:'10',
             totalCount:0,
-            search:''
+            search:'',
+            addPublic:false,//新增公共服务项
+            addVisible:false,//控制新增的数据项
+            form:{
+                serviceName:'',
+                serviceTypeId:'',
+                campusId:'',//校园名称
+                shortDes:'',//简介
+                describe:'',//描述
+                data:'',//json数据
+                file:'',//上传的公共服务的图片
+                label:'',//图标
+                serviceId:'',
+            },
+            updateVisible:false,
+            rules2:{
+                serviceName:[
+                    {required: true, message: '公共服务名称不能为空', trigger: 'blur'}
+                ],
+
+            }
         }
     },
     watch: {
@@ -146,16 +269,46 @@ export default {
         }
     },
     created() {
-        this.getPublicList();
+        
+         this.getCampusList();
     },
     methods: {
+         /**
+         * 获取校区信息
+         */
+        getCampusList(){
+            axios({
+                url:this.$store.state.UrlIP+'/campus/getData',
+                method:'get',
+                params:{
+                    pageIndex:'1',
+                    pageSize:'10'
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    res.data.data.forEach(item=>{
+                        this.campusList.push({
+                            id:item.campusId,
+                            campusName:item.campusName
+                        })
+                    });
+                    this.campus=6;
+                    this.getPublicList();//获取公共服务的数据
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
         getPublicList(){
             this.publicSortList=[];
             axios({
                 url:this.$store.state.UrlIP+'/publicService/getData',
                 method:'get',
                 params:{
-                    campusId:'6',
+                    campusId:this.campus,
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
                     key:this.search,
@@ -193,7 +346,20 @@ export default {
                 console.log(err);
             })
         },
-        addInfo(){},
+        //新增公共服务项
+        addInfo(){
+            this.addPublic=true;
+            this.addVisible=true;
+            this.form={
+                serviceName:'',
+                serviceTypeId:'',
+                campusId:'',//校园名称
+                shortDes:'',//简介
+                describe:'',//描述
+                data:'',//json数据
+                file:'',//上传的公共服务的图片
+            }
+        },
         clickSub(){},
         /**
          * 分页
@@ -209,7 +375,130 @@ export default {
             this.pageSize=val;
             this.getPublicList();
         },
+
+
+        //确认添加的按钮
+        addSuccess(data){
+            console.log(data);
+            axios({
+                url:this.$store.state.UrlIP+'/publicService/insertData',
+                method:'post',
+                params:{
+                    campusId:data.id,
+                    serviceName:data.serviceName,
+                    serviceTypeId:data.serviceTypeId,
+                    shortDes:data.shortDes,
+                    describe:data.describe,
+                    file:data.file,
+                    // token:'886a'
+                },
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }).then(res=>{
+                console.log(res);
+                if (res.data.code==100) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    });
+                    this.getPublicList();
+                    this.addPublic=false;
+                    this.addVisible=false;
+                }
+            }).catch(error=>{
+                console.log(error);
+            })
+        },
+        //取消添加的按钮
+        cancelAdd(){
+            this.addPublic=false;
+            this.addVisible=false;
+        },
+
+        //修改操作
+        updateInfo(row,index){
+            this.form={
+                serviceName:row.serviceName,
+                serviceTypeId:row.serviceId,
+                campusId:row.campusId,//校园名称
+                shortDes:row.shortDes,//简介
+                describe:row.describe,//描述
+                data:'',//json数据
+                label:row.iconUrl,//上传的公共服务的图片
+                file:row.picUrl,
+                serviceId:row.serviceId
+            }
+            this.updateVisible=true;
+        },
+
+        //修改成功的提交
+        saveAdd(name){
+            this.$refs[name].validate((valid)=>{
+                if (valid) {
+                    axios({
+                        url:this.$store.state.UrlIP+'/publicService/updateData',
+                        method:'post',
+                        params:{
+                            serviceId:this.form.serviceId,
+                            campusId:this.form.campusId,
+                            serviceName:this.form.serviceName,
+                            serviceTypeId:this.form.serviceTypeId,
+                            shortDes:this.form.shortDes,
+                            describe:this.form.describe,
+                            file:this.form.file,
+                        },
+                        headers:{
+                            'Content-type':'multipart/form-data'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>操作成功！</span>",
+                                type: "success",
+                                customClass: "zZindex",
+                            });
+                            this.updateVisible = false;
+                            this.getPublicList();
+                        }else{
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                    res.data.code +
+                                    " 错误信息：" +
+                                    res.data.msg +
+                                    "</span>",
+                                type: "error",
+                                customClass: "zZindex",
+                            });
+                        }
+                    }).catch(err=>{
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                            "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
+                    })
+                }else{
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>请输入有效数据！</span>",
+                        type: "error",
+                        customClass: "zZindex",
+                    });
+                    // this.$message.error('系统错误！');
         
+                }
+            })
+        }
+
+
     },
 }
 </script>
@@ -217,5 +506,18 @@ export default {
 .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;
+}
+</style>
+<style>
+.el-message {
+  height: 100px;
+  width: 600px;
+  font-size: 35px !important;
+  font-weight: bold;
+}
+.zZindex {
+  z-index: 3000 !important;
+  font-size: 35px !important;
+  font-weight: bold;
 }
 </style>
