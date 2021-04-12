@@ -27,18 +27,20 @@
             <template slot-scope="{row}" slot="State">
                 <font v-if="row.State==0" color='green'>正常</font>
                 <font v-else-if="row.State==1" color='orange'>暂停</font>
-                <font v-else color='red'>删除</font>
+                <!-- <font v-else color='red'>删除</font> -->
             </template>
+
+            
 
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
                 <font v-if="row.State==0">
-                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
+                    <Button type="warning" size='small' style="marginRight:5px" @click="endInfo(row,index)">停用</Button>
                 </font>
                 <font v-else-if="row.State==1">
                     <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
                 </font>
-                <Button type="error" size='small' @click="deleteRow(row,index)">删除</Button>
+                <!-- <Button type="error" size='small' @click="deleteRow(row,index)">删除</Button> -->
             </template>
         </Table>
 
@@ -49,72 +51,127 @@
             </Page>
         </template>
 
-        <!-- 停用/启用操作 -->
-        <template v-if="flagDel">
-            <v-dialog   
-                :updateVisible='updateVisible'
-                @deleteOne='deleteOne(msg)'
-                @cancleDelete='cancleDelete'
-            >
-            </v-dialog>
-        </template>
+
+        <!-- 新增登录用户 -->
+        <el-dialog  title="添加管理员信息" :visible.sync="addVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
+                <el-form-item label="登录账号:" prop="loginName">
+                    <el-input
+                        v-model="form.loginName"
+                        placeholder="请输入登录名称"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="昵称:" prop="nickName">
+                    <el-input
+                        v-model="form.nickName"
+                        placeholder="请输入管理员姓名"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="设置密码:" prop="passwordMD5">
+                    <el-input
+                        v-model="form.passwordMD5"
+                        :type="showPass ? 'text':'password'"
+                        placeholder="请输入密码"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                    
+                </el-form-item>
+                <el-form-item label="角色:" prop="roleName">
+                    <el-select v-model="form.roleName" style="width:300px;margin-bottom:20px">
+                        <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="addVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+            </span>
+        </el-dialog>
+
+        <!--    启用管理员操作-->
+        <el-dialog title="提示" :visible.sync="startVisible" width="350px" center>
+            <div class="del-dialog-cnt">是否确定启用该用户？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="startVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="deleteRow">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!--    停用管理员操作-->
+        <el-dialog title="提示" :visible.sync="deleteVisible" width="350px" center>
+            <div class="del-dialog-cnt">是否确定停用该用户？</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="deleteVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="deleteRow">确 定</el-button>
+            </span>
+        </el-dialog>
+
         
-        <!-- 启用操作 -->
-        <template v-if="flagStr"> 
-            <v-dialog
-                :startVisible='startVisible'
-                @deleteOne='deleteOne(msg)'
-                @cancleStart='cancleStart'
-            >
-            </v-dialog>
-        </template>
+        <!-- 修改管理员信息 -->
+        <el-dialog title="修改管理员信息" :visible.sync="updateVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules2">
+                <el-form-item label="登录账号:" prop="loginName">
+                    <el-input
+                        v-model="form.loginName"
+                        placeholder="请输入登录名称"
+                        disabled
+                        style="width:300px;margin-left:-15px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
 
-        <!-- 删除弹框 -->
-        <template v-if="flagDelete">
-            <v-dialog
-                :deleteVisible='deleteVisible'
-                @deleteAdmin='deleteAdmin'
-                @deleteRowOne='deleteRowOne'
-            >
+                <el-form-item label="昵称:" prop="nickName">
+                    <el-input
+                        v-model="form.nickName"
+                        placeholder="请输入管理员姓名"
+                        style="width:300px;margin-left:-15px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
 
-            </v-dialog>
-        </template>
-        
-        <!-- 修改操作 -->
-        <template v-if="flagUpd">
-            <v-dialog
-                :flagUpd='flagUpd'
-                :updateAdminVisible='updateAdminVisible'
-                :row='form'
-                @updCancal='updCancal'
-                @updSuccess='updSuccess'
-            >
-            </v-dialog>
-        </template>
+                <el-form-item label="设置密码:">
+                    <el-input
+                        type="password"
+                        v-model="form.updpasswordMD5"
+                        placeholder="保留原密码"
+                        style="width:300px;margin-left:-15px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
 
-        <!-- 添加操作 -->
-        <template v-if="flagAdd">
-            <v-dialog
-                :flagAdd='flagAdd'
-                :addVisible='addVisible'
-                :addRow='form'
-                @addSuccess='addSuccess'
-                @cancelAdd='cancelAdd'
-            >
+                <el-form-item label="角色名称:" prop="roleName">
+                    <el-select
+                        v-model="form.roleName"
+                        style="width:300px;margin-left:-15px;margin-bottom:5px"
+                    >
+                        <el-option
+                        v-for="item in this.roleList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
 
-            </v-dialog>
-        </template>
-        
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="updateVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveUpdateName('form')">确 定</el-button>
+            </span>
+        </el-dialog>
+
+
     </div>
 </template>
 <script>
 import axios from 'axios';
-import vDialog from '../../dialog/admin-dialog.vue'
+// import vDialog from '../../dialog/admin-dialog.vue'
 export default {
     name:'admin',
-    components:{
-        vDialog
-    },  
+    
     data() {
         return {
           columns:[
@@ -137,25 +194,25 @@ export default {
                   align:'center'
               },{
                   title:'角色',
-                  key:'RoleID',
-                  minWidth:120,
+                  key:'RoleName',
+                  width:'130px',
                   align:'center'
               },{
                   title:'IP地址',
                   key:'LastIPAddress',
-                  minWidth:150,
+                  width:'110px',
                   align:'center'
               },{
                   title:'创建时间',
                   tooltip:'true',
                   key:'CreateTime',
-                  minWidth:120,
+                  width:'120px',
                   align:'center'
               },{
                   title:'最近登录时间',
                   tooltip:'true',
                   key:'LastLoginTime',
-                  minWidth:120,
+                  width:'130px',
                   align:'center'
               },{
                   title:'状态',
@@ -165,7 +222,7 @@ export default {
               },{
                   title:'操作',
                   slot:'action',
-                  width:'200px',
+                  width:'140px',
                   align:'center',
               }
 
@@ -177,32 +234,59 @@ export default {
           index:0,
           msg:'',
           search:'',
-          updateVisible:false,
-          startVisible:false,
-          flagDel:false,
-          flagStr:false,
-          updateAdminVisible:false,
-          flagUpd:false,
-          flagAdd:false,
+          roleList:[],
+          mes:'',
+          index:'',
+          showPass:false,
+
+          /**
+           * 添加操作
+           */
           addVisible:false,
+          startVisible:false,
           deleteVisible:false,
-          flagDelete:false,
-          form:{
-              AdminID:'',
-              LoginName:'',
-              NickName:'',
-              password:'',
-              RoleID:''
-          }
+          updateVisible:false,
+
+          form: {
+            adminID: null,
+            roleID: null,
+            loginName: "",
+            nickName: "",
+            passwordMD5: "",
+            oldpasswordMD5: "",
+            newpasswordMD5: "",
+            secNewpasswordMD5: "",
+            updpasswordMD5:'',
+            roleName: "",
+            dataName: "",
+        },
+          /**
+           * 验证规则
+           */
+          rules2: {
+                loginName: [
+                    { required: true, message: "登录账号不能为空", trigger: "blur" },
+                ],
+                nickName: [
+                    { required: true, message: "昵称不能为空", trigger: "blur" },
+                ],
+                passwordMD5: [
+                    { required: true, message: "密码不能为空", trigger: "blur" },
+                ],
+                
+                roleName: [
+                    { required: true, message: "角色名称不能为空", trigger: "blur" },
+                ],
+            },
         }
     },
     created() {
         this.getAdminList();
+        //获得角色信息
+        this.getRoleList();
     },
     watch: {
-        updateVisible:function(newVal,old){
-            this.updateVisible=newVal
-        },
+        
         msg:{
             deep:true,
             handler:function(newVal,old){
@@ -211,6 +295,36 @@ export default {
         }
     },
     methods: {
+
+        /**
+         * 获得角色列表
+         */
+        getRoleList(){
+            axios({
+                url:this.$store.state.UrlIP+'/authority/getRoles',
+                method:'get',
+                params:{
+                    pageIndex:'1',
+                    pageSize:'1000',
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    res.data.data.forEach(item=>{
+                        this.roleList.push({
+                            id:item.roleID,
+                            name:item.roleName
+                        })
+                    })
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+
+
         /**
          * 回车操作
          */
@@ -238,203 +352,289 @@ export default {
                 console.log(err);
             })
         },
+
+
         /**
          * 修改操作
          */
         updateInfo(row,index){
-            this.msg=row;
             this.form={
-                AdminID:this.msg.AdminID,
-                LoginName:this.msg.LoginName,
-                NickName:this.msg.NickName,
-                password:'',
-                RoleID:this.msg.RoleID
+                adminID: row.AdminID,
+                roleID: row.RoleID,
+                loginName: row.LoginName,
+                nickName: row.NickName,
+                passwordMD5: '',
+                oldpasswordMD5: '',
+                newpasswordMD5: '',
+                secNewpasswordMD5: '',
+                updpasswordMD5:'',
+                roleName: '',
             };
-            this.updateAdminVisible=true;
-            this.flagUpd=true;
-        },
-        updCancal(){
-            this.updateAdminVisible=false;
-            this.flagUpd=false;
-        },
-        updSuccess(data){
-            axios({
-                url:this.$store.state.UrlIP+'/admin/updateAdmin',
-                method:'get',
-                params:{
-                    adminID:data.AdminID,
-                    nickName:data.NickName,
-                    token:'886a'
-                }, 
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    console.log(res.data.data);
-                    this.updateAdminVisible=false; 
-                }
-            }).catch(err=>{
-                console.log(err)
-            })
-        },
-        /**
-         * 停用/启用操作
-         */
-        deleteInfo(row,index){
-            this.msg=row;
+            this.mes=row;
             this.updateVisible=true;
-            this.flagDel=true;
         },
-        deleteAdmin(index){
-            axios({
-                url:this.$store.state.UrlIP+'/admin/updateAdminState',
-                method:'get',
-                params:{
-                   adminId:this.msg.AdminID,
-                   state:index,
-                   token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    this.$Message['success']({
-                        background: true,
-                        content:'操作成功！'
-                    })
-                    this.getAdminList();
-                    this.flagDelete=false;
-                    this.deleteVisible=false;
-                }
-            }).catch(err=>{
-                console.log(err);
-            })
-        },
+
         /**
-         * 由停用状态转换为正常态
+         * 修改按钮操作
          */
-        deleteOne(row){
-            let index;
-            if (row.State=='0') {
-                index='1'
-            }else if (row.State=='1') {
-                index='0'
-            }else{
-                index='-1'
-            }
-            
-            axios({
-                url:this.$store.state.UrlIP+'/admin/updateAdminState',
-                method:'get',
-                params:{
-                   adminId:row.AdminID,
-                   state:index,
-                   token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    this.$Message['success']({
-                        background: true,
-                        content:'操作成功！'
+        saveUpdateName(name){
+            this.$refs[name].validate(valid=>{
+                if (valid) {
+                    axios({
+                        url:this.$store.state.UrlIP+'/admin/updateAdmin',
+                        method:'get',
+                        params:{
+                            nickName:this.form.nickName,
+                            passwordMD5:this.$md5(this.form.newpasswordMD5),
+                            adminID:this.form.adminID
+                        },
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            // this.updateVisible=false;
+                            // this.getAdminList();
+                        }else{
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                    res.data.code +
+                                    " 错误信息：" +
+                                    res.data.msg +
+                                    "</span>",
+                                type: "error",
+                                customClass: "zZindex",
+                            });
+                        }
+                    }).catch(err=>{
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                            "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
                     })
-                    this.getAdminList();
-                    if (this.updateVisible) {
-                        this.updateVisible=false;
-                        this.flagDel=false;
-                    }else if (this.startVisible) {
-                        this.startVisible=false;
-                        this.flagStr=false;
-                    }
+
+                    //分配角色
+                    axios({
+                        url:this.$store.state.UrlIP+'/admin/setRole',
+                        method:'get',
+                        params:{
+                            adminID:this.form.adminID,
+                            roleId:this.form.roleName
+                        },
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'修改成功！'
+                            })
+                            this.updateVisible=false;
+                            this.getAdminList();
+
+                        }
+                    }).catch(err=>{
+                        console.log(err);
+                    })
                     
+                }else{
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>请输入有效信息！</span>",
+                        type: "warning",
+                        customClass: "zZindex",
+                    });
                 }
-            }).catch(err=>{
-                console.log(err);
             })
         },
 
 
-        cancleDelete(){
-            this.updateVisible=false;
-            this.flagDel=false;
+
+
+        //停用/启用按钮
+        startInfo(row,index) {
+            this.index = index;
+            this.mes = row;
+            this.startVisible = true;
         },
-        deleteRowOne(){
-            this.flagDelete=false;
-            this.deleteVisible=false;
-       },
+        endInfo(row,index) {
+            this.index = index;
+            this.mes = row;
+            this.deleteVisible = true;
+        },
         /**
-         * 启用操作
+         * 停用/启用确定操作
          */
-        startInfo(row,index){
-            this.startVisible=true;
-            this.msg=row;
-            this.flagStr=true;
-        },
-        cancleStart(){
-            this.startVisible=false;
-            this.flagStr=false;
-        },
-        //添加操作
+        deleteRow() {
+            var index = this.dataList[this.index].State;
+            index = index == 0 ? 1 : 0;
+
+            axios({
+                url: this.$store.state.UrlIP + "/admin/updateAdminState",
+                method: "get",
+                params: {
+                    // token: localStorage.getItem("Authorization"),
+                    adminId: this.mes.AdminID,
+                    state: index,
+                },
+                headers: {
+                    "Content-type": "application/x-www-form-urlencoded",
+                }
+            })
+                .then((res) => {
+                    if (res.data.code == 0) {
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                                "<span style='font-size: 20px;margin-left: 20px'>操作成功！</span>",
+                            type: "success",
+                            customClass: "zZindex",
+                        });
+                        // this.$message.success("操作成功！");
+                        this.getAdminList();
+                    } else {
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                                "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                res.data.code +
+                                " 错误信息：" +
+                                res.data.msg +
+                                "</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
+                    
+                    }
+                })
+                .catch((error) => {
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                        type: "error",
+                        customClass: "zZindex",
+                    });
+                // this.$message.error('系统错误！');
+                });
+                if (this.startVisible) {
+                    this.startVisible = false;
+                } else {
+                    this.deleteVisible = false;
+                }
+            },
+
+
+        /**
+         * 添加操作
+         */
         addInfo(){
             this.form={
-                LoginName:'',
-                NickName:'',
-                password:'',
-                RoleID:'' 
+                adminID: null,
+                roleID: null,
+                loginName: "",
+                nickName: "",
+                passwordMD5: "",
+                oldpasswordMD5: "",
+                newpasswordMD5: "",
+                secNewpasswordMD5: "",
+                updpasswordMD5:'',
+                roleName: "",
+                dataName: "",
             }
-            this.flagAdd=true;
             this.addVisible=true;
         },
-        addSuccess(data){
-            axios({
-                url:this.$store.state.UrlIP+'/admin/insertAdmin',
-                method:'get',
-                params:{
-                    loginName:data.LoginName,
-                    nickName:data.NickName,
-                    passwordMD5:data.password,
-                    roleID:data.RoleID,
-                    token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    this.$Message['success']({
-                        background: true,
-                        content:'操作成功！'
-                    })
-                    this.addVisible=false;
-                    this.flagAdd=false;
-                    this.getAdminList();
-                }
-            }).catch(err=>{
-                console.log(err);
-            })
-        },
-        //取消添加操作
-        cancelAdd(){
-            this.addVisible=false;
-            this.flagAdd=false;
-        },
 
-        // 删除某一行操作
-        deleteRow(row,index){
-            this.msg=row;
-            this.flagDelete=true;
-            this.deleteVisible=true;
-        }
+        saveAdd(name){
+            this.$refs[name].validate(valid=>{
+                if (valid) {
+                    
+                    axios({
+                        url:this.$store.state.UrlIP+'/admin/insertAdmin',
+                        method:'get',
+                        params:{
+                            loginName:this.form.loginName,
+                            nickName:this.form.nickName,
+                            passwordMD5:this.$md5(this.form.passwordMD5),
+                            roleID:this.form.roleName,
+                        },
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.addVisible=false;
+                            this.getAdminList();
+                        }else{
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                    res.data.code +
+                                    " 错误信息：" +
+                                    res.data.msg +
+                                    "</span>",
+                                type: "error",
+                                customClass: "zZindex",
+                            });
+                        }
+                    }).catch(err=>{
+                       this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                            "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
+                    })
+                }else{
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>请输入有效信息！</span>",
+                        type: "warning",
+                        customClass: "zZindex",
+                    });
+                }
+            })
+            
+        },
+        
     },
 }
 </script>
-<style>
-.ivu-icon-ios-apps{
+<style scoped>
+/*删除弹框*/
+  .del-dialog-cnt{
+    font-size: 16px;
+    text-align: center
+  }
+  .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;
 }
 </style>
+<style>
+
+.el-message{
+    height: 100px;
+    width: 600px;
+    font-size: 35px !important;
+    font-weight: bold;
+  }
+  .zZindex {
+    z-index:3000 !important;
+    font-size: 35px !important;
+    font-weight: bold;
+  }

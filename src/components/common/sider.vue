@@ -84,7 +84,17 @@ export default {
                         }
                     ]
                 },
-
+                {
+                    icon: 'el-icon-news',
+                    index: 'colleague',
+                    title: '学院数据',
+                    children:[
+                        {
+                            index:'colleague-manage',
+                            title:'学院数据管理'
+                        }
+                    ]
+                },
                 {
                     icon: 'el-icon-news',
                     index: 'building',
@@ -144,6 +154,12 @@ export default {
                         },{
                             index:'admin',
                             title:'管理员设置'
+                        },{
+                            index:'logMessage',
+                            title:'日志管理'
+                        },{
+                            index:'loginHistory',
+                            title:'登录历史'
                         }
                     ]
                 }

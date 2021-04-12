@@ -42,6 +42,15 @@ const freeRoute = [
         }
       },
       {
+        path:'/colleague-manage',
+        name:"colleague-manage",
+        component:resolve => require(['../components/views/colleague/colleague-manage.vue'], resolve),
+        meta: {
+          title: '学院数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
         path:'/building-manage',
         name:"building-manage",
         component:resolve => require(['../components/views/building/building-manage.vue'], resolve),
@@ -100,6 +109,22 @@ const freeRoute = [
         component:resolve => require(['../components/views/system/admin.vue'], resolve),
         meta: {
           title: '管理员设置',
+          // icon:'el-icon-setting'
+        }
+      },{
+        path:'/logMessage',
+        name:"logMessage",
+        component:resolve => require(['../components/views/system/logMessage.vue'], resolve),
+        meta: {
+          title: '日志管理',
+          // icon:'el-icon-setting'
+        }
+      },{
+        path:'/loginHistory',
+        name:"loginHistory",
+        component:resolve => require(['../components/views/system/loginHistory.vue'], resolve),
+        meta: {
+          title: '登录历史',
           // icon:'el-icon-setting'
         }
       },

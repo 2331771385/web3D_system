@@ -10,9 +10,10 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
-import md5 from 'js-md5'
+
 import cookies from 'vue-cookies'
 import '../src/assets/common/css/common.css'
+import md5 from 'js-md5'
 
 Vue.use(cookies)
 Vue.prototype.$md5 = md5
@@ -28,6 +29,9 @@ Vue.prototype.$axios = axios;
 import ViewUI from 'view-design'
 import 'view-design/dist/styles/iview.css'
 Vue.use(ViewUI)
+
+
+Vue.prototype.$md5 = md5;
 
 //添加全局拦截器
 axios.defaults.timeout = 60000;

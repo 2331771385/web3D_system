@@ -137,11 +137,11 @@
         <el-dialog  title="修改设备信息" :visible.sync="updateVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
                 <el-form-item label="校区名称:" prop='campusId'>
-                    <el-select v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                    <el-select v-model="form.campusId" disabled style="width:300px;margin-bottom:5px">
                         <el-option
                             v-for="item in campusList"
                             :key="item.id"
-                            :label="'['+item.id+']'+item.campusName"
+                            :label="item.campusName"
                             :value="item.id"
                             
                         ></el-option>
@@ -153,7 +153,7 @@
                         v-model="form.deviceName"
                         placeholder="设备名称"
                         style="width:300px;margin-bottom:5px"
-                        clearable
+                        disabled
                     ></el-input>
                 </el-form-item>
 

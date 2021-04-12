@@ -2,49 +2,46 @@
     <div class="tableContainer">
         <div class="table-label">
             <Icon  type="ios-apps" size='22'/>
-            <span class="pageTitle">路径数据列表</span>
+            <p class="pageTitle">学院数据列表</p>
         </div>
+
         <!-- 搜索框 -->
         <div class='searchInput'>
             <div class="search-top">
+
                 <span class="search-box-text">校区:</span>
                 <Select v-model="campus" style="width:200px" clearable>
                     <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
                 </Select>
-                <!-- <span class="search-box-text">公共服务分类:</span>
+
+                <!-- <span class="search-box-text">设备分类:</span>
                 <Select v-model="psortVal" style="width:200px">
-                    <Option v-for="item in pathSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
-                </Select> -->
+                    <Option v-for="item in videoSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
+                </Select>
                 <span class="search-box-text">模糊查询:</span>
                 <Input style="width:auto" 
                     v-model="search"
-                    placeholder="公共服务名称、类型名称关键字"
+                    placeholder="设备名称、类型名称关键字"
                     clearable
                     @on-enter="clickSub"
-                    @on-clear='getPathList'
-                    @on-change='getPathList'
-                />
-                <Button type="primary" @click="getPathList" icon="ios-search">查找</Button>
-                <Button type="success" @click="addInfo" icon='ios-add'>新增</Button>
+                    @on-clear='getVideoList'
+                    @on-change='getVideoList'
+                />-->
+                <Button type="primary" @click="getColleagueList" icon="ios-search">查找</Button>
+                <!-- <Button type="success" @click="addInfo" icon='ios-add'>新增</Button>  -->
             </div>
         </div>
 
-        <!-- 列表数据 -->
-        <Table border :columns='columns' :data='dataList'>
+        <Table border :columns='columns' :data='collegeList'>
+            <template slot-scope="{row}" slot="updateTime">
+                <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">{{row.createTime}}</font>
+                <font v-else>{{row.updateTime}}</font>
+            </template>
+
             <template slot-scope="{row}" slot="state">
                 <font v-if="row.state==0" color='green'>正常</font>
                 <font v-else-if="row.state==1" color='orange'>暂停</font>
                 <font v-else color='red'>删除</font>
-            </template>
-
-            <template slot-scope="{row}" slot="createTime">
-                <font v-if="row.createTime==null || row.createTime==undefined">-</font>
-                <font v-else>{{row.createTime}}</font>
-            </template>
-
-            <template slot-scope="{row}" slot="updateTime">
-                <font v-if="row.updateTime==null || row.updateTime==undefined">{{row.createTime}}</font>
-                <font v-else>{{row.updateTime}}</font>
             </template>
 
             <template slot-scope="{row,index}" slot="action">
@@ -56,57 +53,82 @@
                     <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
                 </font>
             </template>
+
         </Table>
 
-
-        <!-- 分页操作 -->
-        <template>
-            <Page class="pageIndex" :total='totalCount' size='small' 
-                show-elevator show-sizer show-total
-                @on-change='changePage'
-                @on-page-size-change='changePagesize'
-            >
-            </Page>
-        </template>
     </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
 export default {
-    name:'path-manage',
+    name:'colleague-manage',
     data() {
         return {
-            dataList:[],
+            campus:'',
+            campusList:[],
+            currentPage:'1',
+            pageSize:'10',
+            totalCount:0,
+            collegeList:[],
             columns:[
                 {
                     title:'id',
-                    key: 'pathId',
-                    //  minWidth:'90px',
-                    width:'100px',
+                    key: 'collegeId',
+                    width:'60px',
                     align:'center'
                 },{
-                    title:'路径名称',
-                    key: 'pathName',
+                    title:'学院名称',
+                    key: 'collegeName',
                     //  minWidth:'90px',
-                    width:'150px',
+                    width:'140px',
                     align:'center'
                 },{
-                    title:'创建时间',
-                    slot: 'createTime',
-                     minWidth:100,
-                    // width:'160px',
-                    align:'center'
+                    title:'学院描述',
+                    key: 'describe',
+                    tooltip:'true',
+                    //  minWidth:'90px',
+                    minWidth:130,
+                    align:'center',
+                },{
+                    title:'学院简介',
+                    key: 'shortDes',
+                    //  minWidth:'90px',
+                    tooltip:'true',//开启后，文本将不换行
+                    minWidth:130,
+                    align:'center',
+                },{
+                    title:'学院图片',
+                    key: 'picUrl',
+                    //  minWidth:'90px',
+                    tooltip:'true',
+                    minWidth:120,
+                    align:'center',
+                },{
+                    title:'宣传链接',
+                    key: 'videoUrl',
+                    tooltip:'true',
+                    //  minWidth:'90px',
+                    minWidth:120,
+                    align:'center',
+                },{
+                    title:'学院链接',
+                    key: 'webUrl',
+                    tooltip:'true',
+                    //  minWidth:'90px',
+                    minWidth:120,
+                    align:'center',
                 },{
                     title:'修改时间',
+                    tooltip:'true',
                     slot: 'updateTime',
-                     minWidth:100,
-                    // width:'160px',
+                    //  minWidth:'90px',
+                    width:'110px',
                     align:'center'
                 },{
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
-                    width:'100px',
+                    width:'90px',
                     align:'center'
                 },{
                     title:'操作',
@@ -115,22 +137,13 @@ export default {
                     align:'center'
                 }
             ],
-            currentPage:'1',
-            pageSize:'10',
-            totalCount:0,
-            search:'',
-            campus:'',
-            campusList:[],
         }
     },
     created() {
-        this.getCampusList();//获取校区信息
-        // this.getPathList();
+        this.getCampusList();
     },
     methods: {
-        clickSub(){
-            this.getPathList();
-        },
+        //获得校区的数据列表
         getCampusList(){
             axios({
                 url:this.$store.state.UrlIP+'/campus/getData',
@@ -152,49 +165,40 @@ export default {
                     });
 
                     this.campus=6;
-                    this.getPathList();//获取监控列表的信息
-                }
-            }).catch(err=>{
-                console.log(err);
-            })
-        },
-        /**
-         * 获取路径信息
-         */
-        getPathList(){
-            axios({
-                url:this.$store.state.UrlIP+'/path/getData',
-                method:'get',
-                params:{
-                    pageIndex:this.currentPage,
-                    pageSize:this.pageSize,
-                    campusId:this.campus,
-                    key:this.search,
-                    pathId:''
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    console.log(res.data.data);
-                    this.dataList=res.data.data;
-                    this.totalCount=res.data.respPage.totalCount
+                    this.getColleagueList();//获取学院信息
                 }
             }).catch(err=>{
                 console.log(err);
             })
         },
 
-        addInfo(){},
-        changePage(val){
-            this.currentPage=val;
-            this.getPathList();
+
+        //获得学院信息
+        getColleagueList(){
+            axios({
+                url:this.$store.state.UrlIP+'/college/getData',
+                method:'get',
+                params:{
+                    campusId:this.campus,
+                    pageSize:this.pageSize,
+                    pageIndex:this.currentPage,
+                },
+                headers:{
+                    'Content-type':'application-x-www-urlencoded'
+                }
+            }).then(res=>{
+                if (res.data.code==0) {
+                    console.log(res.data.data);
+                    this.collegeList=res.data.data;
+                    this.totalCount=res.data.respPage.totalCount
+                }
+            }).catch(error=>{
+
+            })
         },
-        changePagesize(val){
-            this.pageSize=val;
-            this.getPathList();
-        },
+
+
+
 
     },
 }
