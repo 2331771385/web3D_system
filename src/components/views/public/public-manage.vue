@@ -144,7 +144,7 @@
                     ></el-input> -->
                     <el-upload
                         class="upload-demo"
-                        action="http://211.87.231.41:8089/publicService/insertData"
+                        action="http://211.87.231.41:8089"
                         :on-change="handleChange"
                         :file-list="fileList">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -160,7 +160,7 @@
                     ></el-input> -->
                     <el-upload
                         class="upload-demo"
-                        action="http://211.87.231.41:8089/publicService/insertData"
+                        action="http://211.87.231.41:8089"
                         :on-change="handleChange1"
                         :file-list="fileList1">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -238,7 +238,7 @@
                     ></el-input> -->
                     <el-upload
                         class="upload-demo"
-                        action="http://211.87.231.41:8089/publicService/insertData"
+                        action="http://211.87.231.41:8089"
                         :on-change="handleChange"
                         :file-list="fileList">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -254,7 +254,7 @@
                     ></el-input> -->
                     <el-upload
                         class="upload-demo"
-                        action="http://211.87.231.41:8089/publicService/insertData"
+                        action="http://211.87.231.41:8089"
                         :on-change="handleChange1"
                         :file-list="fileList1">
                         <el-button size="small" type="primary">点击上传</el-button>

@@ -73,7 +73,7 @@
 
 
         <!-- 修改数据 -->
-        <!-- <el-dialog  title="修改学院信息" :visible.sync="updateVisible" width="480px">
+        <el-dialog  title="修改学院信息" :visible.sync="updateVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
                     <el-select disabled v-model="form.campusId" style="width:300px;margin-bottom:5px">
@@ -90,53 +90,69 @@
 
                 <el-form-item label="学院名称:">
                     <el-input
-                        v-model="form.campusShortName"
+                        v-model="form.collegeName"
                         style="width:300px;margin-bottom:5px"
-                        clearable
                         disabled
                     ></el-input>
                 </el-form-item>
 
-                <el-form-item label="所在城市:">
+                <!-- <el-form-item label="所在城市:">
                     <el-input
                         v-model="form.cityName"
                         style="width:300px;margin-bottom:5px"
                         clearable
                         disabled
                     ></el-input>
-                </el-form-item>
+                </el-form-item> -->
 
-                <el-form-item label="校区描述:" >
+                <el-form-item label="学院描述:" >
                     <el-input
-                        v-model="form.describe"
-                        placeholder="校区描述"
+                        type="textarea"
+                        cols="10"
+                        rows="4"
+                        v-model="form.descripe"
+                        placeholder="学院描述"
                         style="width:300px;margin-bottom:5px"
+                        clearable
                     ></el-input>
                 </el-form-item>
 
-                <el-form-item label="校区简介:">
+                <el-form-item label="学院简介:">
                     <el-input
+                        type="textarea"
+                        cols="10"
+                        rows="4"
                         v-model="form.shortDes"
-                        placeholder="校区简介"
+                        placeholder="学院简介"
                         style="width:300px;margin-bottom:5px"
+                        clearable
                     ></el-input>
                 </el-form-item>
 
 
                 
                 <el-form-item label="图片:" >
-                    <el-input
+                    <!-- <el-input
                         v-model="form.file"
                         style="width:300px;margin-bottom:5px"
-                    ></el-input>
+                    ></el-input> -->
+
+                    <el-upload
+                        class="upload-demo"
+                        action="http://211.87.231.41:8089"
+                        :on-change="handleChange"
+                        :file-list="fileList">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+                    </el-upload>
                 </el-form-item>
             </el-form>
 
             <span slot="footer" class="dialog-footer">
                 <el-button class="tableBtn" @click="updateVisible = false">取 消</el-button>
-                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveUpd('form')">确定</el-button>
             </span>
-        </el-dialog> -->
+        </el-dialog>
 
     </div>
 </template>
@@ -146,6 +162,7 @@ export default {
     name:'colleague-manage',
     data() {
         return {
+            fileList:[],
             search:'',
             campus:'',
             campusList:[],
@@ -215,13 +232,50 @@ export default {
                 }
             ],
             updateVisible:false,
-
+            msg:'',
+            index:'',
+            form:{
+                campusId:'',
+                collegeName:'',
+                descripe:'',
+                shortDes:'',
+                webUrl:'',//学院连接
+                file:'',//图片上传
+                videoUrl:''
+            }
         }
     },
     created() {
         this.getCampusList();
     },
     methods: {
+        handleChange(file, fileList) {
+            this.fileList = fileList.slice(-2);
+        },
+
+        /**
+         * 修改学院数据
+         */
+        updateInfo(row,index){
+            this.msg=row;
+            this.updateVisible=true;
+            this.form={
+                campusId:this.msg.campusId,
+                collegeName:this.msg.collegeName,
+                descripe:this.msg.describe,
+                shortDes:this.msg.shortDes,
+                webUrl:this.msg.webUrl,//学院连接
+                file:this.msg.picUrl,//图片上传
+            }
+        },
+
+        /**
+         * 修改操作
+         */
+        saveUpd(){
+            
+        },
+        
         /**
          * 改变页码
          */
@@ -308,5 +362,9 @@ export default {
 }
 a{
     color: #000000a8;
+}
+.upload-demo{
+    text-align: left;
+    margin-left: 10px;
 }
 </style>
