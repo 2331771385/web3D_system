@@ -281,9 +281,9 @@ export default {
         }
     },
     created() {
-        this.getAdminList();
         //获得角色信息
         this.getRoleList();
+        this.getAdminList();
     },
     watch: {
         
@@ -312,6 +312,7 @@ export default {
                 }
             }).then(res=>{
                 if (res.data.code==0) {
+                    console.log(res.data.data);
                     res.data.data.forEach(item=>{
                         this.roleList.push({
                             id:item.roleID,

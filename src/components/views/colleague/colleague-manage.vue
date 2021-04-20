@@ -17,16 +17,16 @@
                 <!-- <span class="search-box-text">设备分类:</span>
                 <Select v-model="psortVal" style="width:200px">
                     <Option v-for="item in videoSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
-                </Select>
-                <span class="search-box-text">模糊查询:</span>
+                </Select>--> 
+                <!-- <span class="search-box-text">模糊查询:</span> -->
                 <Input style="width:auto" 
                     v-model="search"
-                    placeholder="设备名称、类型名称关键字"
+                    placeholder="学院名称关键字"
                     clearable
                     @on-enter="clickSub"
-                    @on-clear='getVideoList'
-                    @on-change='getVideoList'
-                />-->
+                    @on-clear='getColleagueList'
+                    @on-change='getColleagueList'
+                />
                 <Button type="primary" @click="getColleagueList" icon="ios-search">查找</Button>
                 <!-- <Button type="success" @click="addInfo" icon='ios-add'>新增</Button>  -->
             </div>
@@ -34,8 +34,12 @@
 
         <Table border :columns='columns' :data='collegeList'>
             <template slot-scope="{row}" slot="updateTime">
-                <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">{{row.createTime}}</font>
+                <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">-</font>
                 <font v-else>{{row.updateTime}}</font>
+            </template>
+
+            <template slot-scope="{row}" slot="webUrl">
+                <font><a href='row.webUrl'> </a></font>
             </template>
 
             <template slot-scope="{row}" slot="state">
@@ -64,6 +68,7 @@ export default {
     name:'colleague-manage',
     data() {
         return {
+            search:'',
             campus:'',
             campusList:[],
             currentPage:'1',
@@ -112,10 +117,11 @@ export default {
                     align:'center',
                 },{
                     title:'学院链接',
-                    key: 'webUrl',
+                    slot: 'webUrl',
                     tooltip:'true',
                     //  minWidth:'90px',
-                    minWidth:120,
+                    // minWidth:120,
+                    width:'110px',
                     align:'center',
                 },{
                     title:'修改时间',
@@ -143,6 +149,9 @@ export default {
         this.getCampusList();
     },
     methods: {
+        clickSub(){
+            this.getColleagueList();
+        },
         //获得校区的数据列表
         getCampusList(){
             axios({
@@ -150,7 +159,7 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'10'
+                    pageSize:'100'
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -182,6 +191,7 @@ export default {
                     campusId:this.campus,
                     pageSize:this.pageSize,
                     pageIndex:this.currentPage,
+                    key:this.search
                 },
                 headers:{
                     'Content-type':'application-x-www-urlencoded'

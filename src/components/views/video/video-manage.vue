@@ -97,7 +97,7 @@
                     ></el-input>
                 </el-form-item>
 
-                <el-form-item label="设备类型:">
+                <!-- <el-form-item label="设备类型:">
                     <el-select v-model="form.deviceTypeId" style="width:300px;margin-bottom:5px">
                         <el-option
                             v-for="item in videoSortList"
@@ -106,6 +106,15 @@
                             :value="item.id"
                         ></el-option>
                     </el-select>
+                </el-form-item> -->
+
+                <el-form-item label="设备类型:" prop="deviceTypeId">
+                    <el-input
+                        v-model="form.deviceTypeId"
+                        placeholder="设备类型"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
                 </el-form-item>
 
                 <!-- 图片 -->
@@ -277,6 +286,9 @@ export default {
                 ],
                 campusId:[
                     {required: true, message: '校区名称不能为空', trigger: 'blur'}
+                ],
+                deviceTypeId:[
+                    {required: true, message: '设备类型不能为空', trigger: 'blur'}
                 ]
             }
         }

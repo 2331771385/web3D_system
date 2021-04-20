@@ -39,7 +39,7 @@
             </template>
 
             <template slot-scope="{row}" slot="updateTime">
-                <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">{{row.createTime}} </font>
+                <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">-</font>
                 <font v-else>{{row.updateTime}}</font>
             </template>
 
@@ -103,6 +103,7 @@
                         v-model="form.campusShortName"
                         style="width:300px;margin-bottom:5px"
                         clearable
+                        disabled
                     ></el-input>
                 </el-form-item>
 
@@ -258,8 +259,6 @@ export default {
         this.getCampus();
     },
     methods: {
-
-
         /**
          * 获取校区信息
          */
@@ -269,7 +268,7 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'10'
+                    pageSize:'100'
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -304,7 +303,7 @@ export default {
                     'Content-type':'application/x-www-form-urlencoded'
                 }
             }).then(res=>{
-                console.log(res);
+                console.log(res.data.data);
                 if (res.data.code==0) {
                     this.campusList=res.data.data;
                     this.totalCount=res.data.respPage.totalCount

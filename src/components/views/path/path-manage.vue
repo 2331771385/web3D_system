@@ -18,7 +18,7 @@
                 <span class="search-box-text">模糊查询:</span>
                 <Input style="width:auto" 
                     v-model="search"
-                    placeholder="公共服务名称、类型名称关键字"
+                    placeholder="路径名称关键字"
                     clearable
                     @on-enter="clickSub"
                     @on-clear='getPathList'
@@ -68,6 +68,49 @@
             >
             </Page>
         </template>
+
+        <!-- 新增路径信息 -->
+        <el-dialog  title="添加路径信息" :visible.sync="addVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
+                <el-form-item label="校区名称:" prop="campusId">
+                    <el-select v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.campusName"
+                            :value="item.id"
+                            
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="路径名称:" prop="pathName">
+                    <el-input
+                        v-model="form.pathName"
+                        placeholder="路径名称"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+                
+                <el-form-item label="路径信息:" prop="pathMsg">
+                    <el-input
+                        v-model="form.pathMsg"
+                        placeholder="路径信息"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+                
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="addVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+            </span>
+        </el-dialog>
+
+
     </div>
 </template>
 <script>
@@ -121,6 +164,23 @@ export default {
             search:'',
             campus:'',
             campusList:[],
+            form:{
+                pathName:'',
+                campusId:'',//校区名称
+                psthMsg:'',//校区信息
+            },
+            addVisible:false,
+            rules2:{
+                campusId:[
+                    {required: true, message: '校区名称不能为空', trigger: 'blur'}
+                ],
+                pathName:[
+                    {required: true, message: '路径名称不能为空', trigger: 'blur'}
+                ],
+                pathMsg:[
+                    {required: true, message: '路径信息不能为空', trigger: 'blur'}
+                ]
+            }
         }
     },
     created() {
@@ -186,7 +246,71 @@ export default {
             })
         },
 
-        addInfo(){},
+        //新增路径信息
+        addInfo(){
+            this.addVisible=true;
+            this.form={
+                pathName:'',
+                campusId:'',
+                pathMsg:'',
+            }
+        },
+        //添加路径信息的确定按钮
+        saveAdd(name){
+            this.$refs[name].validate(valid=>{
+                if (valid) {
+                    axios({
+                        url:this.$store.state.UrlIP+'',
+                        method:'',
+                        params:{
+
+                        },
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.addVisible=false;
+                            this.getPathList()
+                        }else{
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                    res.data.code +
+                                    " 错误信息：" +
+                                    res.data.msg +
+                                    "</span>",
+                                type: "error",
+                                customClass: "zZindex",
+                            });
+                        }
+                    }).catch(err=>{
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                            "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
+                    })
+                }else{
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>请输入有效信息！</span>",
+                        type: "warning",
+                        customClass: "zZindex",
+                    });
+                }
+            })
+        },
+
+
         changePage(val){
             this.currentPage=val;
             this.getPathList();
@@ -205,3 +329,16 @@ export default {
     margin-top: 2px !important;
 }
 </style>
+<style>
+
+.el-message{
+    height: 100px;
+    width: 600px;
+    font-size: 35px !important;
+    font-weight: bold;
+  }
+  .zZindex {
+    z-index:3000 !important;
+    font-size: 35px !important;
+    font-weight: bold;
+  }
