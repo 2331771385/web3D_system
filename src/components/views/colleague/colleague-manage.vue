@@ -38,9 +38,9 @@
                 <font v-else>{{row.updateTime}}</font>
             </template>
 
-            <template slot-scope="{row}" slot="webUrl">
+            <!-- <template slot-scope="{row}" slot="webUrl">
                 <font><a href='row.webUrl'> </a></font>
-            </template>
+            </template> -->
 
             <template slot-scope="{row}" slot="state">
                 <font v-if="row.state==0" color='green'>正常</font>
@@ -117,7 +117,7 @@ export default {
                     align:'center',
                 },{
                     title:'学院链接',
-                    slot: 'webUrl',
+                    key: 'webUrl',
                     tooltip:'true',
                     //  minWidth:'90px',
                     // minWidth:120,
