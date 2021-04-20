@@ -15,6 +15,8 @@
     "font-awesome": "^4.7.0",
     "iview": "^3.5.4",
     "js-md5": "^0.7.3",
+    "view-design": "^4.5.0",
+    "viewerjs": "^1.9.0",
     "vue": "^2.5.2",
     "vue-cookies": "^1.7.4",
     "vue-router": "^3.0.1",
