@@ -251,6 +251,7 @@ export default {
                 cityId:'',
                 campusName:'',
                 cityName:'',
+                
             }
         }
     },

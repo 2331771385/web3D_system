@@ -38,9 +38,10 @@
                 <font v-else>{{row.updateTime}}</font>
             </template>
 
-            <!-- <template slot-scope="{row}" slot="webUrl">
-                <font><a href='row.webUrl'> </a></font>
-            </template> -->
+            <!-- 给表格中的某一列添加超链接 -->
+            <template slot-scope="{row}" slot="webUrl">
+                <font v-if="row.webUrl"><a :href='row.webUrl'>{{row.webUrl}}</a></font>
+            </template>
 
             <template slot-scope="{row}" slot="state">
                 <font v-if="row.state==0" color='green'>正常</font>
@@ -59,6 +60,83 @@
             </template>
 
         </Table>
+
+        <!-- 分页操作 -->
+        <template> 
+            <Page class="pageIndex" :total='totalCount' size='small' 
+                show-elevator show-sizer show-total
+                @on-change='changePage'
+                @on-page-size-change='changePagesize'
+            >
+            </Page>
+        </template>
+
+
+        <!-- 修改数据 -->
+        <!-- <el-dialog  title="修改学院信息" :visible.sync="updateVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" class="demo-ruleForm">
+                <el-form-item label="校区名称:" >
+                    <el-select disabled v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.campusName"
+                            :value="item.id"
+                            disabled
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+
+                <el-form-item label="学院名称:">
+                    <el-input
+                        v-model="form.campusShortName"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                        disabled
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="所在城市:">
+                    <el-input
+                        v-model="form.cityName"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                        disabled
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="校区描述:" >
+                    <el-input
+                        v-model="form.describe"
+                        placeholder="校区描述"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="校区简介:">
+                    <el-input
+                        v-model="form.shortDes"
+                        placeholder="校区简介"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+
+                
+                <el-form-item label="图片:" >
+                    <el-input
+                        v-model="form.file"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="updateVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+            </span>
+        </el-dialog> -->
 
     </div>
 </template>
@@ -109,19 +187,12 @@ export default {
                     minWidth:120,
                     align:'center',
                 },{
-                    title:'宣传链接',
-                    key: 'videoUrl',
-                    tooltip:'true',
-                    //  minWidth:'90px',
-                    minWidth:120,
-                    align:'center',
-                },{
                     title:'学院链接',
-                    key: 'webUrl',
+                    slot: 'webUrl',
                     tooltip:'true',
                     //  minWidth:'90px',
                     // minWidth:120,
-                    width:'110px',
+                    width:'230px',
                     align:'center',
                 },{
                     title:'修改时间',
@@ -143,12 +214,29 @@ export default {
                     align:'center'
                 }
             ],
+            updateVisible:false,
+
         }
     },
     created() {
         this.getCampusList();
     },
     methods: {
+        /**
+         * 改变页码
+         */
+        changePage(val){
+            this.currentPage=val;
+            this.getColleagueList();
+        },
+        /**
+         * 改变页数
+         */
+        changePagesize(val){
+            this.pageSize=val;
+            this.getColleagueList();
+        },
+
         clickSub(){
             this.getColleagueList();
         },
@@ -217,5 +305,8 @@ export default {
 .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;
+}
+a{
+    color: #000000a8;
 }
 </style>
