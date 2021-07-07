@@ -132,13 +132,9 @@
                     ></el-input>
                 </el-form-item>
 
-
                 <!-- 图片 -->
                 <el-form-item label="图片:" >
-                    <el-input
-                        v-model="form.file"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input>
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
             </el-form>
 
@@ -156,6 +152,7 @@ export default {
     name:'campus-manage',
     data() {
         return {
+            fileList:[],
             currentPage:'1',
             pageSize:'10',
             totalCount:0,
@@ -213,13 +210,14 @@ export default {
                 //     minWidth:130,
                 //     align:'center'
                 // },
+                // {
+                //     title:'图片',
+                //     key: 'picUrl',
+                //     minWidth:130,
+                //     tooltip:'true',
+                //     align:'center'
+                // },
                 {
-                    title:'图片',
-                    key: 'picUrl',
-                    minWidth:130,
-                    tooltip:'true',
-                    align:'center'
-                },{
                     title:'修改时间',
                     slot: 'updateTime',
                     tooltip:'true',
@@ -260,6 +258,19 @@ export default {
         this.getCampus();
     },
     methods: {
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
+        },
+
+        handleChange(file, fileList) {
+            this.fileList = fileList.slice(-2);
+        },
         /**
          * 获取校区信息
          */
@@ -345,11 +356,11 @@ export default {
                     shortDes:this.form.shortDes,
                     describe:this.form.describe,
                     campusShortName:this.form.campusShortName,
-                    file:this.form.file,
+                    file:this.$refs.fileType.files[0],
                     data:this.form.data
                 },
                 headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
+                    'Content-type':'multipart/form-data'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
@@ -407,5 +418,8 @@ export default {
     float: left !important;
     margin-top: 2px !important;
 }
-
+.upload-demo{
+    text-align: left;
+    margin-left: 10px;
+}
 </style>

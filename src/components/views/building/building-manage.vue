@@ -85,20 +85,53 @@
         </template>
         
 
-        <!-- 添加操作 -->
-        <template v-if="addBuilding">
-            <v-dialog
-                :addVisible='addVisible'
-                :addRow='form'
-                :addBuilding='addBuilding'
-                :addBuildingSort="buildingSortList"
-                :campusList='campusList'
-                @addSuccess='addSuccess'
-                @cancelAdd='cancelAdd'
-            >
 
-            </v-dialog>
-        </template>
+         <el-dialog  title="添加建筑信" :visible.sync="addVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules='ruleValidate' class="demo-ruleForm">
+                <el-form-item label="校区名称:" >
+                    <el-select  v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList" 
+                            :key="item.id" 
+                            :label="item.campusName" 
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label='建筑分类:'>
+                    <el-select v-model="form.buildTypeId" style="width:300px;margin-bottom:5px" clearable>
+                        <el-option 
+                            v-for="item in buildingSortList" 
+                            :key="item.id" :label="item.name" 
+                            :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label='建筑名称:' prop='buildName'>
+                    <el-input v-model="form.buildName"  placeholder="请输入建筑名称" style="width:300px;margin-bottom:5px" clearable></el-input>
+                </el-form-item>
+            
+               <el-form-item label='建筑描述:'>
+                    <el-input v-model="form.des" placeholder="建筑描述" style="width:300px;margin-bottom:5px" clearable></el-input>
+                </el-form-item>
+                <el-form-item label='建筑简介:'>
+                    <el-input v-model="form.shortDes" placeholder="建筑简介" style="width:300px;margin-bottom:5px" clearable></el-input>
+                </el-form-item>
+                
+
+                <!-- 图片 -->
+                <el-form-item label="图片:" >
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                </el-form-item>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="addVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="addSuccess('form')">确定</el-button>
+            </span>
+        </el-dialog>
+
         
     </div>
 </template>
@@ -129,7 +162,7 @@ export default {
                     title:'建筑名称',
                     key: 'buildName',
                     //  minWidth:'90px',
-                    width:'120px',
+                    minWidth:120,
                     align:'center',
                     className: 'test-name'
                 },{
@@ -162,14 +195,16 @@ export default {
                     width:'150px',
                     align:'center',
                     className: 'test-name'
-                },{
+                },
+                {
                     title:'图标',
                     key: 'iconUrl',
                     minWidth:120,
                     tooltip:'true',
                     align:'center',
                     className: 'test-name'
-                },{
+                },
+                {
                     title:'修改时间',
                     slot: 'updateTime',
                     minWidth:100,
@@ -197,7 +232,6 @@ export default {
             search:'',
             msg:'',
             updVisible:false,
-            addBuilding:false,
             addVisible:false,
             updBuilding:false,
             form:{
@@ -209,6 +243,11 @@ export default {
                 shortDes:'',
                 campusId:'',
                 buildTypeId:''
+            },
+            ruleValidate:{
+                buildName: [
+                    { required: true, message: '建筑名称不能为空', trigger: 'blur' }
+                ]
             }
         }
     },
@@ -217,6 +256,15 @@ export default {
         this.getCampusList();
     },
     methods: {
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
+        },
         clickSub(){
             this.getBuildingList();
         },
@@ -249,6 +297,7 @@ export default {
                 if (res.data.code==0) {
                     this.totalCount=res.data.respPage.totalCount;
                     res.data.data.forEach(item=>{
+                        // console.log(item);
                         this.campusList.forEach(ele=>{
                             if (ele.id==item.campusId) {
                                 item.campusName=ele.campusName;
@@ -294,7 +343,6 @@ export default {
         },
 
         addInfo(){
-            this.addBuilding=true;
             this.form={
                 des:'',
                 buildName:'',
@@ -367,7 +415,40 @@ export default {
         /**
          * 添加建筑信息
          */
-        addSuccess(data){
+        addSuccess(){
+            this.$refs['form'].validate(valid => {
+                if (valid) {
+                    let formData = new FormData();
+                    console.log(this.form);
+                    formData.append('buildTypeId', this.form.buildTypeId);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('buildName', this.form.buildName);
+                    formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('describe',this.form.des);
+                    formData.append('shortDes',this.form.shortDes);
+                    formData.append('token', '886a');
+                    axios({
+                        url:this.$store.state.UrlIP+'/building/insertData',
+                        method:'post',
+                        params:formData,
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res=>{
+                        if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.getBuildingList();
+                            this.addVisible=false;
+                        }
+                    }).catch(err=>{
+                        console.log(err);
+                    })
+                }
+            })
+            console.log(data);
             axios({
                 url:this.$store.state.UrlIP+'/building/insertData',
                 method:'post',
@@ -391,21 +472,29 @@ export default {
                     })
                     this.getBuildingList();
                     this.addVisible=false;
-                    this.addBuilding=false;
                 }
             }).catch(err=>{
                 console.log(err);
             })
         },
-        cancelAdd(){
-            this.addVisible=false;
-            this.addBuilding=false;
-        },
+
         cancelUpd(){
             this.updVisible=false;
             this.updBuilding=false;
         },
         updSuccess(data,index){
+            console.log('=========');
+            console.log(data);
+            let formData = new FormData();
+            formData.append("buildTypeId",data.buildTypeId);
+            formData.append("campusId",data.campusId);
+            formData.append("buildName",data.buildName);
+            formData.append("shortDes",data.shortDes);
+            formData.append("describe",data.describe);
+            formData.append("buildId",data.buildId);
+            formData.append("token",'886a');
+            formData.append("file",data.file);
+            console.log(data.file,"-----------");
             axios({
                 url:this.$store.state.UrlIP+'/building/updateData',
                 method:'post',
@@ -416,11 +505,12 @@ export default {
                     shortDes:data.shortDes,
                     describe:data.des,
                     buildId:data.buildId,
-                    file:'',
+                    file: data.picUrl,
                     token:'886a'
                 },
+               // params:formData,
                 headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
+                    'Content-type':'multipart/form-data'
                 }
             }).then(res=>{
                 if (res.data.code==0) {

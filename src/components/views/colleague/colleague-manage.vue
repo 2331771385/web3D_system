@@ -28,7 +28,7 @@
                     @on-change='getColleagueList'
                 />
                 <Button type="primary" @click="getColleagueList" icon="ios-search">查找</Button>
-                <!-- <Button type="success" @click="addInfo" icon='ios-add'>新增</Button>  -->
+                <Button type="success" @click="addInfo" icon='ios-add'>新增</Button> 
             </div>
         </div>
 
@@ -71,6 +71,62 @@
             </Page>
         </template>
 
+    <!-- 添加数据 -->
+        <el-dialog  title="新增学院信息" :visible.sync="addVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" class="demo-ruleForm">
+                <el-form-item label="校区名称:" >
+                    <el-select v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.campusName"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="学院名称:">
+                    <el-input
+                        v-model="form.collegeName"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="学院描述:" >
+                    <el-input
+                        type="textarea"
+                        cols="10"
+                        rows="4"
+                        v-model="form.descripe"
+                        placeholder="学院描述"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="学院简介:">
+                    <el-input
+                        type="textarea"
+                        cols="10"
+                        rows="4"
+                        v-model="form.shortDes"
+                        placeholder="学院简介"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="图片:" >
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                </el-form-item>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="addVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
+            </span>
+        </el-dialog>
+
 
         <!-- 修改数据 -->
         <el-dialog  title="修改学院信息" :visible.sync="updateVisible" width="480px">
@@ -95,15 +151,6 @@
                         disabled
                     ></el-input>
                 </el-form-item>
-
-                <!-- <el-form-item label="所在城市:">
-                    <el-input
-                        v-model="form.cityName"
-                        style="width:300px;margin-bottom:5px"
-                        clearable
-                        disabled
-                    ></el-input>
-                </el-form-item> -->
 
                 <el-form-item label="学院描述:" >
                     <el-input
@@ -137,14 +184,7 @@
                         style="width:300px;margin-bottom:5px"
                     ></el-input> -->
 
-                    <el-upload
-                        class="upload-demo"
-                        action="http://211.87.231.41:8089"
-                        :on-change="handleChange"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                    </el-upload>
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
             </el-form>
 
@@ -180,7 +220,7 @@ export default {
                     title:'学院名称',
                     key: 'collegeName',
                     //  minWidth:'90px',
-                    width:'140px',
+                    minWidth:230,
                     align:'center'
                 },{
                     title:'学院描述',
@@ -196,14 +236,16 @@ export default {
                     tooltip:'true',//开启后，文本将不换行
                     minWidth:130,
                     align:'center',
-                },{
-                    title:'学院图片',
-                    key: 'picUrl',
-                    //  minWidth:'90px',
-                    tooltip:'true',
-                    minWidth:120,
-                    align:'center',
-                },{
+                },
+                // {
+                //     title:'学院图片',
+                //     key: 'picUrl',
+                //     //  minWidth:'90px',
+                //     tooltip:'true',
+                //     minWidth:120,
+                //     align:'center',
+                // },
+                {
                     title:'学院链接',
                     slot: 'webUrl',
                     tooltip:'true',
@@ -242,13 +284,78 @@ export default {
                 webUrl:'',//学院连接
                 file:'',//图片上传
                 videoUrl:''
-            }
+            },
+            addVisible: false
         }
     },
     created() {
         this.getCampusList();
     },
     methods: {
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
+        },
+
+        addInfo() {
+            this.addVisible = true;
+            this.form = {
+                campusId:'',
+                collegeName:'',
+                descripe:'',
+                shortDes:'',
+                webUrl:'',//学院连接
+                file:'',//图片上传
+                videoUrl:''
+            };
+        },
+        
+        saveAdd() {
+            this.$refs['form'].validate((valid)=>{
+                if (valid) {
+                    let formData = new FormData();
+                    console.log(this.form);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('collegeName', this.form.collegeName);
+                    formData.append('shortDes', this.form.shortDes);
+                    formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('token', '886a');
+                    console.log(this.$store.state.UrlIP + '/college/insertData');
+                    axios({
+                        url: this.$store.state.UrlIP + '/college/insertData',
+                        method: "post",
+                        params: {
+                            campusId: formData.get('campusId'),
+                            collegeName: formData.get('collegeName'),
+                            shortDes: formData.get('shortDes'),
+                            file: formData.get('file'),
+                            token: formData.get('token')
+                        },
+                        headers: {
+                            "Content-type": "multipart/form-data",
+                        },
+                    }).then(res => {
+                       if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.getColleagueList();
+                            this.addVisible=false;
+                        }
+                    }).catch(err => {
+                        this.addVisible=false;
+                    })
+                }
+            })
+        },
+
+
         handleChange(file, fileList) {
             this.fileList = fileList.slice(-2);
         },
@@ -257,6 +364,8 @@ export default {
          * 修改学院数据
          */
         updateInfo(row,index){
+            console.log(row);
+            this.index = index;
             this.msg=row;
             this.updateVisible=true;
             this.form={
@@ -273,7 +382,45 @@ export default {
          * 修改操作
          */
         saveUpd(){
-            
+            this.$refs['form'].validate((valid)=>{
+                if (valid) {
+                    let formData = new FormData();
+                    console.log(this.form);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('collegeName', this.form.collegeName);
+                    formData.append('shortDes', this.form.shortDes);
+                    formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('token', '886a');
+                    console.log();
+                    console.log(this.$refs.fileType.files[0]);
+                    axios({
+                        url: this.$store.state.UrlIP + '/college/updateData',
+                        method: "post",
+                        params: {
+                            campusId: formData.get('campusId'),
+                            // collegeName: formData.get('collegeName'),
+                            shortDes: formData.get('shortDes'),
+                            file: this.$refs.fileType.files[0],
+                            token: formData.get('token'),
+                            collegeId: this.msg.collegeId,
+                        },
+                        headers: {
+                            "Content-type": "multipart/form-data",
+                        },
+                    }).then(res => {
+                       if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.getColleagueList();
+                            this.updateVisible=false;
+                        }
+                    }).catch(err => {
+                        this.updateVisible=false;
+                    })
+                }
+            })
         },
         
         /**

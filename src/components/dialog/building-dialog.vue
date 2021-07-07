@@ -1,39 +1,5 @@
 <template>
     <div>
-        <!-- 添加操作 -->
-        <template v-if="tempBuild">
-            <Modal v-model="tempAdd"  width='400' 
-                    title="添加建筑信息" style="text-align:center;"
-                    @on-ok='addSuccess'
-                    @on-cancel='cancelAdd'
-            >
-                <Form ref="formAddValid" :model="tempAddBuild" :rules='ruleValidate' :label-width='105'>
-                    <FormItem label='校区名称:'>
-                        <Select v-model="tempAddBuild.campusId" clearable>
-                            <Option v-for="item in tempCampusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
-                        </Select>
-                    </FormItem>
-
-                    <FormItem label='建筑分类:'>
-                        <Select v-model="tempAddBuild.buildTypeId" clearable>
-                            <Option v-for="item in addBuildingSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
-                        </Select>
-                    </FormItem>
-                    <FormItem label='建筑描述:'>
-                        <Input v-model="tempAddBuild.des" placeholder="建筑描述" clearable></Input>
-                    </FormItem>
-                    <FormItem label='建筑简介:'>
-                        <Input v-model="tempAddBuild.shortDes" placeholder="建筑简介" clearable></Input>
-                    </FormItem>
-                    <FormItem label='建筑名称:' prop='buildName'>
-                        <Input v-model="tempAddBuild.buildName"  placeholder="请输入建筑名称" clearable></Input>
-                    </FormItem>
-                    <FormItem label='图标:'>
-                        <Input v-model="tempAddBuild.file" placeholder="请输入建筑图标" clearable></Input>
-                    </FormItem>
-                </Form>
-            </Modal>
-        </template>
 
         <!-- 修改操作 -->
         <template v-if="tempUpdBuild">
@@ -62,11 +28,12 @@
                         <Input v-model="tempUpdBuilding.shortDes" clearable></Input>
                     </FormItem>
                     <FormItem label='建筑名称:' prop='buildName'>
-                        <Input v-model="tempUpdBuilding.buildName" clearable></Input>
+                        <Input v-model="tempUpdBuilding.buildName" clearable ></Input>
                     </FormItem>
-                    <FormItem label='图标:'>
-                        <Input v-model="tempUpdBuilding.file" clearable></Input>
-                    </FormItem>
+                    
+                    <FormItem label='图片:'>
+                         <Input type="file" v-model="tempUpdBuilding.file" @on-click="aa"></Input>
+                    </FormItem> 
                 </Form>
             </Modal>
         </template>
@@ -77,27 +44,21 @@ import axios from 'axios'
 export default {
     name:'building-dialog',
     props:{
-        addVisible:Boolean,
-        addRow:Object,
-        addBuilding:Boolean,
         updVisible:Boolean,
         updBuilding:Boolean,
         updRow:Object,
         buildingSort:Array,
-        addBuildingSort:Array,
         campusList:Array,
         campusListArr:Array,
     },
     data() {
         return {
-            tempAdd:this.addVisible,
-            tempAddBuild:this.addRow,
-            tempBuild:this.addBuilding,
+            fileListOther: [],
+            fileList: [],
             tempUdp:this.updVisible,
             tempUpdBuilding:this.updRow,
             tempUpdBuild:this.updBuilding,
             buildingSortList:this.buildingSort,
-            addBuildingSortList:this.addBuildingSort,
             tempCampusList:this.campusList,
             tempCampusListArr:this.campusListArr,
             ruleValidate:{
@@ -114,21 +75,15 @@ export default {
         
     },
     methods: {
-        addSuccess(){
-            this.$refs['formAddValid'].validate((valid)=>{
-                if (valid) {
-                    this.$emit('addSuccess',this.tempAddBuild)
-                }else{
-                    this.$Message['error']({
-                        background: true,
-                        content:'错误提示！'
-                    })
-                }
-            })
+        handleChange(file, fileList) {
+            console.log(file,"==========")
+            this.fileList = fileList.slice(-2);
         },
-        cancelAdd(){
-            this.$emit('cancelAdd');
+        handleChangeOther(file, fileList) {
+            this.fileListOther = fileList.slice(-2);
         },
+        
+        
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
                 console.log(this.tempUpdBuilding);
@@ -147,5 +102,8 @@ export default {
 }
 </script>
 <style scoped>
-
+.upload-demo{
+    text-align: left;
+    margin-left: 10px;
+}
 </style>
