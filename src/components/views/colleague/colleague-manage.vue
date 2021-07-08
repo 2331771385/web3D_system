@@ -484,8 +484,6 @@ export default {
 
             })
         },
-<<<<<<< HEAD
-=======
         /**
          * 停用操作
          */
@@ -527,7 +525,6 @@ export default {
         }
 
 
->>>>>>> 0c9e3c787a22c94f42a7ca8d189128c6dd66143c
     },
 }
 </script>
