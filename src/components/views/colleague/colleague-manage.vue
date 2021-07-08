@@ -78,7 +78,7 @@
             </Page>
         </template>
 
-    <!-- 添加数据 -->
+        <!-- 添加数据 -->
         <el-dialog  title="新增学院信息" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules = 'rules'      class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
@@ -199,7 +199,6 @@
                 <el-button class="tableBtn" type="primary" @click="saveUpd('form')">确定</el-button>
             </span>
         </el-dialog>
-
     </div>
 </template>
 <script>
@@ -294,7 +293,8 @@ export default {
                 collegeName: [
                     { required: true, message: '学院名称不能为空', trigger: 'blur' }
                 ]
-            }
+            },
+            deleteFlag: false
         }
     },
     created() {
@@ -484,6 +484,50 @@ export default {
 
             })
         },
+<<<<<<< HEAD
+=======
+        /**
+         * 停用操作
+         */
+        deleteInfo(row, index) {
+            this.$Modal.confirm({
+                title: '注意',
+                content: '是否删除学院及其相关信息？',
+                onOk: () => {
+                    this.handleDelete(row.collegeId);
+                },
+                onCancel: () => {
+                    this.$Message.info('取消删除');
+                }
+            });
+        },
+        handleDelete(collegeId) {
+            this.$axios({
+                url: this.$store.state.UrlIP + '/college/updateData',
+                method: 'post',
+                params: {
+                    collegeId: collegeId,
+                    token: '886a',
+                    state: '1'
+                },
+                headers:{
+                    'Content-type':'application-x-www-urlencoded'
+                }
+            }).then(res => {
+                if(res.data.code == 0) {
+                    this.$Message['success']({
+                        background: true,
+                        content: res.data.msg
+                    });
+                    this.getColleagueList();
+                }
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+
+
+>>>>>>> 0c9e3c787a22c94f42a7ca8d189128c6dd66143c
     },
 }
 </script>

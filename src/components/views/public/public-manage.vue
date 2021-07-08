@@ -598,8 +598,44 @@ export default {
         
                 }
             })
+        },
+        // 
+        deleteInfo(row, index) {
+            this.$Modal.confirm({
+                title: '注意',
+                content: '是否删除公共服务及其相关信息？',
+                onOk: () => {
+                    this.handleDelete(row.serviceId);
+                },
+                onCancel: () => {
+                    this.$Message.info('取消删除');
+                }
+            });
+        },
+        handleDelete(serviceId) {
+            this.$axios({
+                url: this.$store.state.UrlIP + '/publicService/updateData',
+                method: 'post',
+                params: {
+                    serviceId: serviceId,
+                    state: 1,
+                    token: '886a'
+                },
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }).then(res => {
+                if(res.data.code == 0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    });
+                    this.getPublicList();
+                }
+            }).catch(err => {
+                console.log(err);
+            })
         }
-
 
     },
 }

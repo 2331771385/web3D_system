@@ -509,7 +509,44 @@ export default {
             }).catch(err=>{
                 console.log(err);
             })
+        },
+        deleteInfo(row, index) {
+            this.$Modal.confirm({
+                title: '注意',
+                content: '是否删除建筑及其相关信息？',
+                onOk: () => {
+                    this.handleDelete(row.buildId);
+                },
+                onCancel: () => {
+                    this.$Message.info('取消删除');
+                }
+            });
+        },
+        handleDelete(buildId) {
+            this.$axios({
+                url: this.$store.state.UrlIP + '/building/updateData',
+                method: 'post',
+                params: {
+                    buildId: buildId,
+                    state: 1,
+                    token: '886a'
+                },
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }).then(res => {
+                if(res.data.code == 0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    });
+                    this.getBuildingList();
+                }
+            }).catch(err => {
+                console.log(err);
+            })
         }
+        
     },
 }
 </script>
