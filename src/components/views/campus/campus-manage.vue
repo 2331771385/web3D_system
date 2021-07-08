@@ -398,7 +398,12 @@ export default {
         },
 
         //停用操作
-        deleteInfo(){},
+        deleteInfo(row, index){
+            this.$Message['error']({
+                background: true,
+                content:'暂未开发'
+            });
+        },
         //启用操作
         startInfo(){},
         changePage(val){

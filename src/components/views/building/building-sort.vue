@@ -38,7 +38,7 @@
             <!-- 操作 -->
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
-                <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button>
+                <!-- <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button> -->
             </template>
         </Table>
 
@@ -279,7 +279,7 @@ export default {
         updCancal(){
             this.updDialog=false;
             this.updVisible=false;
-        }
+        },
 
     },
 }
