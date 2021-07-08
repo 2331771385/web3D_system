@@ -14,10 +14,7 @@
                     </FormItem>
 
                     <FormItem label='图标:'>
-                        <Upload style="float:left" action="">
-                            <Button icon="ios-cloud-upload-outline">上传图标</Button>
-                        </Upload>
-                        <!-- <Input type="file" v-model="tempAddRow.picture" placeholder="请输入建筑分类图标" clearable></Input> -->
+                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                     </FormItem>
                 </Form>
             </Modal>
@@ -33,18 +30,15 @@
             >
                 <Form ref="formUpdValid" :model="tempUpdRow" :rules='ruleValidate' :label-width='115'>
                     <FormItem label='建筑分类ID:' prop='typeName'>
-                        <Input v-model="tempUpdRow.typeId" disabled></Input>
+                        <Input v-model="tempUpdRow.typeId" disabled />
                     </FormItem>
 
                     <FormItem label='建筑分类名称:' prop='typeName'>
-                        <Input v-model="tempUpdRow.typeName" clearable></Input>
+                        <Input v-model="tempUpdRow.typeName" clearable />
                     </FormItem>
 
                     <FormItem label='图标:'>
-                        <Upload style="float:left" action="">
-                            <Button icon="ios-cloud-upload-outline">上传图标</Button>
-                        </Upload>
-                        <!-- <Input type="file" v-model="tempUpdRow.picture" clearable></Input> -->
+                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                     </FormItem>
                 </Form>
             </Modal>
@@ -60,7 +54,8 @@ export default {
         addRow:Object,
         updDialog:Boolean,
         updVisible:Boolean,
-        updRow:Object
+        updRow:Object,
+        row: Object
     },
     data() {
         return {
@@ -84,10 +79,24 @@ export default {
         
     },
     methods: {
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
+        },
+
         addSuccess(){
             this.$refs['formAddValid'].validate((valid)=>{
                 if (valid) {
-                    this.$emit('addSuccess',this.tempAddRow);
+                    let formData = new FormData();
+                    formData.append("buildTypeName", this.tempAddRow.typeName);
+                    formData.append("token", window.localStorage.getItem('Authorization'));
+                    formData.append("file", this.$refs.fileType.files[0]);
+                    this.$emit('addSuccess',formData);
                 }else{
 
                 }
@@ -96,10 +105,16 @@ export default {
         cancelAdd(){
             this.$emit('cancelAdd')
         },
+
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
                 if (valid) {
-                    this.$emit('updSuccess',this.tempUpdRow);
+                    let formData = new FormData();
+                    formData.append("buildTypeId", this.row.typeId);
+                    formData.append("buildTypeName", this.tempUpdRow.typeName);
+                    formData.append("token", window.localStorage.getItem('Authorization'));
+                    formData.append("file", this.$refs.fileType.files[0]);
+                    this.$emit('updSuccess', formData);
                 }else{
 
                 }

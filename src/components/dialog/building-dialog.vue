@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <!-- 修改操作 -->
         <template v-if="tempUpdBuild">
             <Modal v-model="tempUdp" width='400' 
@@ -16,23 +15,24 @@
                         </Select>
                     </FormItem>
 
+                    <FormItem label='建筑名称:' prop='buildName'>
+                        <Input v-model="tempUpdBuilding.buildName" clearable />
+                    </FormItem>
+
                     <FormItem label='建筑分类:'>
                         <Select v-model="tempUpdBuilding.buildTypeId" filterable clearable>
                             <Option v-for="item in buildingSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
                         </Select>
                     </FormItem>
                     <FormItem label='建筑描述:'>
-                        <Input v-model="tempUpdBuilding.des" clearable></Input>
+                        <Input v-model="tempUpdBuilding.des" clearable />
                     </FormItem>
                     <FormItem label='建筑简介:'>
-                        <Input v-model="tempUpdBuilding.shortDes" clearable></Input>
-                    </FormItem>
-                    <FormItem label='建筑名称:' prop='buildName'>
-                        <Input v-model="tempUpdBuilding.buildName" clearable ></Input>
+                        <Input v-model="tempUpdBuilding.shortDes" clearable />
                     </FormItem>
                     
                     <FormItem label='图片:'>
-                         <Input type="file" v-model="tempUpdBuilding.file" @on-click="aa"></Input>
+                         <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                     </FormItem> 
                 </Form>
             </Modal>
@@ -75,20 +75,29 @@ export default {
         
     },
     methods: {
-        handleChange(file, fileList) {
-            console.log(file,"==========")
-            this.fileList = fileList.slice(-2);
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
         },
-        handleChangeOther(file, fileList) {
-            this.fileListOther = fileList.slice(-2);
-        },
-        
         
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
-                console.log(this.tempUpdBuilding);
                 if (valid) {
-                    this.$emit('updSuccess',this.tempUpdBuilding)
+                    let formData = new FormData();
+                    formData.append("buildTypeId", this.tempUpdBuilding.buildTypeId);
+                    formData.append("campusId", this.tempUpdBuilding.campusId);
+                    formData.append("buildName", this.tempUpdBuilding.buildName);
+                    formData.append("shortDes", this.tempUpdBuilding.shortDes);
+                    formData.append("describe", this.tempUpdBuilding.describe);
+                    formData.append("buildId", this.tempUpdBuilding.buildId);
+                    formData.append("token", window.localStorage.getItem('Authorization'));
+                    formData.append("file", this.$refs.fileType.files[0]);
+                    this.$emit('updSuccess', formData)
                 }else{
                     console.log('出错了');
                 }

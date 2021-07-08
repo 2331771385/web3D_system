@@ -34,45 +34,41 @@ Vue.use(ViewUI)
 Vue.prototype.$md5 = md5;
 
 //添加全局拦截器
-axios.defaults.timeout = 60000;
-axios.defaults.baseURL = 'http://211.87.231.41:8091/';
-axios.interceptors.request.use(function (config) {
-  //存在token
-  if (window.localStorage.getItem('Authorization')) {
-    config.params['token'] = window.localStorage.getItem('Authorization')
-  }
-  return config;
-},
-  function (error) {
-    return Promise.reject(error)
-  })
+// axios.defaults.timeout = 60000;
+// axios.defaults.baseURL = 'http://211.87.231.41:8091/';
+// axios.interceptors.request.use(function (config) {
+//   //存在token
+//   if (window.localStorage.getItem('Authorization')) {
+//     config.params['token'] = window.localStorage.getItem('Authorization')
+//   }
+//   return config;
+// },
+//   function (error) {
+//     return Promise.reject(error)
+//   })
 
 
-axios.interceptors.response.use(function (response) {
-  let time = new Date().getTime()
-  let outTime = axios.defaults.timeout;
-  let lengthTime = time - outTime;
-  // if (response.data.errno == 999) {
-  //   router.replace('/');
-  //   console.log('token过期')
-  // }
-  return response;
-},
-  function (error) {
-    if (error.response.status == 101) {
-      // 101 说明 token 验证失败
-      // 可以直接跳转到登录页面，重新登录获取 token
-      window.location.href = '/login'
-      window.location.reload()
+// axios.interceptors.response.use(function (response) {
+//   let time = new Date().getTime()
+//   let outTime = axios.defaults.timeout;
+//   let lengthTime = time - outTime;
+//   return response;
+// },
+//   function (error) {
+//     if (error.response.status == 101) {
+//       // 101 说明 token 验证失败
+//       // 可以直接跳转到登录页面，重新登录获取 token
+//       window.location.href = '/login'
+//       window.location.reload()
 
-    } else if (error.response.status == 500) {
-      // 服务器错误
-      // do something
-      return Promise.reject(error.response.data)
-    }
-    return Promise.reject(error.response.data)
+//     } else if (error.response.status == 500) {
+//       // 服务器错误
+//       // do something
+//       return Promise.reject(error.response.data)
+//     }
+//     return Promise.reject(error.response.data)
 
-  })
+//   })
 
 /* eslint-disable no-new */
 new Vue({

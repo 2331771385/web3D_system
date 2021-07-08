@@ -8,14 +8,14 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">校区:</span>
-                <Select v-model="campus" style="width:200px" clearable>
-                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
-                </Select>
+                <el-select v-model="campus" style="width:200px" clearable>
+                    <el-option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></el-option>
+                </el-select>
 
                 <span class="search-box-text">建筑分类:</span>
-                <Select v-model="bsortVal" style="width:200px" clearable>
-                    <Option v-for="item in buildingSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
-                </Select>
+                <el-select v-model="bsortVal" style="width:200px" clearable>
+                    <el-option v-for="item in buildingSortList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select>
 
                 <span class="search-box-text">模糊查询:</span>
                 <Input style="width:auto" 
@@ -45,6 +45,13 @@
                 <font v-if="row.state==0" color='green'>正常</font>
                 <font v-else-if="row.state==1" color='orange'>暂停</font>
                 <font v-else color='red'>删除</font>
+            </template>
+
+            <!-- 显示图片信息 -->
+            <template slot-scope="{ row }" slot="picUrl">
+                <font>
+                    <img class="item-imgs" :src="row.picUrl" />
+                </font>
             </template>
 
             <template slot-scope="{row,index}" slot="action">
@@ -84,8 +91,7 @@
             </v-dialog>
         </template>
         
-
-
+        
          <el-dialog  title="添加建筑信" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules='ruleValidate' class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
@@ -197,12 +203,11 @@ export default {
                     className: 'test-name'
                 },
                 {
-                    title:'图标',
-                    key: 'iconUrl',
+                    title:'图片 ',
+                    slot: 'picUrl',
                     minWidth:120,
                     tooltip:'true',
                     align:'center',
-                    className: 'test-name'
                 },
                 {
                     title:'修改时间',
@@ -297,7 +302,6 @@ export default {
                 if (res.data.code==0) {
                     this.totalCount=res.data.respPage.totalCount;
                     res.data.data.forEach(item=>{
-                        // console.log(item);
                         this.campusList.forEach(ele=>{
                             if (ele.id==item.campusId) {
                                 item.campusName=ele.campusName;
@@ -305,6 +309,9 @@ export default {
                         })
                     });
                     this.dataList=res.data.data;
+                    this.dataList.forEach(item => {
+                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
+                    })
                 }
             }).catch(err=>{
                 console.log(err);
@@ -419,20 +426,19 @@ export default {
             this.$refs['form'].validate(valid => {
                 if (valid) {
                     let formData = new FormData();
-                    console.log(this.form);
                     formData.append('buildTypeId', this.form.buildTypeId);
                     formData.append('campusId', this.form.campusId);
                     formData.append('buildName', this.form.buildName);
                     formData.append('file',this.$refs.fileType.files[0]);
                     formData.append('describe',this.form.des);
                     formData.append('shortDes',this.form.shortDes);
-                    formData.append('token', '886a');
+                    formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
-                        url:this.$store.state.UrlIP+'/building/insertData',
-                        method:'post',
-                        params:formData,
-                        headers:{
-                            'Content-type':'application/x-www-form-urlencoded'
+                        url: this.$store.state.UrlIP+'/building/insertData',
+                        method: 'post',
+                        data: formData,
+                        headers: {
+                            'Content-type': 'multipart/form-data'
                         }
                     }).then(res=>{
                         if (res.data.code==0) {
@@ -482,37 +488,15 @@ export default {
             this.updVisible=false;
             this.updBuilding=false;
         },
-        updSuccess(data,index){
-            console.log('=========');
-            console.log(data);
-            let formData = new FormData();
-            formData.append("buildTypeId",data.buildTypeId);
-            formData.append("campusId",data.campusId);
-            formData.append("buildName",data.buildName);
-            formData.append("shortDes",data.shortDes);
-            formData.append("describe",data.describe);
-            formData.append("buildId",data.buildId);
-            formData.append("token",'886a');
-            formData.append("file",data.file);
-            console.log(data.file,"-----------");
+        updSuccess(data){
             axios({
-                url:this.$store.state.UrlIP+'/building/updateData',
-                method:'post',
-                params:{
-                    buildTypeId:data.buildTypeId,
-                    campusId:data.campusId,
-                    buildName:data.buildName,
-                    shortDes:data.shortDes,
-                    describe:data.des,
-                    buildId:data.buildId,
-                    file: data.picUrl,
-                    token:'886a'
-                },
-               // params:formData,
-                headers:{
+                url: this.$store.state.UrlIP+'/building/updateData',
+                method: 'post',
+                data,
+                headers: {
                     'Content-type':'multipart/form-data'
                 }
-            }).then(res=>{
+            }).then(res => {
                 if (res.data.code==0) {
                     this.$Message['success']({
                         background: true,
@@ -536,5 +520,9 @@ export default {
 }
 .ivu-table th.test-name {
     height: 30px !important;
+}
+.item-imgs{
+    width: 20px;
+    height: 20px;
 }
 </style>

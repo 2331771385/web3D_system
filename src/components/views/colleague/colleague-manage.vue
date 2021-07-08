@@ -10,9 +10,9 @@
             <div class="search-top">
 
                 <span class="search-box-text">校区:</span>
-                <Select v-model="campus" style="width:200px" clearable>
-                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
-                </Select>
+                <el-select v-model="campus" style="width:200px" clearable>
+                    <el-option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></el-option>
+                </el-select>
 
                 <!-- <span class="search-box-text">设备分类:</span>
                 <Select v-model="psortVal" style="width:200px">
@@ -41,6 +41,13 @@
             <!-- 给表格中的某一列添加超链接 -->
             <template slot-scope="{row}" slot="webUrl">
                 <font v-if="row.webUrl"><a :href='row.webUrl'>{{row.webUrl}}</a></font>
+            </template>
+
+            <!-- 显示图片信息 -->
+            <template slot-scope="{ row }" slot="picUrl">
+                <font>
+                    <img class="item-imgs" :src="row.picUrl" />
+                </font>
             </template>
 
             <template slot-scope="{row}" slot="state">
@@ -73,7 +80,7 @@
 
     <!-- 添加数据 -->
         <el-dialog  title="新增学院信息" :visible.sync="addVisible" width="480px">
-            <el-form :model="form" ref="form" label-width="115px" class="demo-ruleForm">
+            <el-form :model="form" ref="form" label-width="115px" :rules = 'rules'      class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
                     <el-select v-model="form.campusId" style="width:300px;margin-bottom:5px">
                         <el-option
@@ -85,7 +92,7 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="学院名称:">
+                <el-form-item label="学院名称:" prop="collegeName">
                     <el-input
                         v-model="form.collegeName"
                         style="width:300px;margin-bottom:5px"
@@ -94,9 +101,6 @@
 
                 <el-form-item label="学院描述:" >
                     <el-input
-                        type="textarea"
-                        cols="10"
-                        rows="4"
                         v-model="form.descripe"
                         placeholder="学院描述"
                         style="width:300px;margin-bottom:5px"
@@ -106,11 +110,17 @@
 
                 <el-form-item label="学院简介:">
                     <el-input
-                        type="textarea"
-                        cols="10"
-                        rows="4"
                         v-model="form.shortDes"
                         placeholder="学院简介"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="学院链接:">
+                    <el-input
+                        v-model="form.webUrl"
+                        placeholder="学院链接"
                         style="width:300px;margin-bottom:5px"
                         clearable
                     ></el-input>
@@ -154,9 +164,6 @@
 
                 <el-form-item label="学院描述:" >
                     <el-input
-                        type="textarea"
-                        cols="10"
-                        rows="4"
                         v-model="form.descripe"
                         placeholder="学院描述"
                         style="width:300px;margin-bottom:5px"
@@ -166,9 +173,6 @@
 
                 <el-form-item label="学院简介:">
                     <el-input
-                        type="textarea"
-                        cols="10"
-                        rows="4"
                         v-model="form.shortDes"
                         placeholder="学院简介"
                         style="width:300px;margin-bottom:5px"
@@ -176,14 +180,16 @@
                     ></el-input>
                 </el-form-item>
 
-
+                <el-form-item label="学院链接:">
+                    <el-input
+                        v-model="form.webUrl"
+                        placeholder="学院链接"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
                 
                 <el-form-item label="图片:" >
-                    <!-- <el-input
-                        v-model="form.file"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input> -->
-
                     <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
             </el-form>
@@ -237,21 +243,19 @@ export default {
                     minWidth:130,
                     align:'center',
                 },
-                // {
-                //     title:'学院图片',
-                //     key: 'picUrl',
-                //     //  minWidth:'90px',
-                //     tooltip:'true',
-                //     minWidth:120,
-                //     align:'center',
-                // },
+                {
+                    title:'学院图片',
+                    slot: 'picUrl',
+                    //  minWidth:'90px',
+                    tooltip:'true',
+                    minWidth:120,
+                    align:'center',
+                },
                 {
                     title:'学院链接',
                     slot: 'webUrl',
                     tooltip:'true',
-                    //  minWidth:'90px',
-                    // minWidth:120,
-                    width:'230px',
+                    minWidth: 90,
                     align:'center',
                 },{
                     title:'修改时间',
@@ -285,7 +289,12 @@ export default {
                 file:'',//图片上传
                 videoUrl:''
             },
-            addVisible: false
+            addVisible: false,
+            rules:{
+                collegeName: [
+                    { required: true, message: '学院名称不能为空', trigger: 'blur' }
+                ]
+            }
         }
     },
     created() {
@@ -319,23 +328,16 @@ export default {
             this.$refs['form'].validate((valid)=>{
                 if (valid) {
                     let formData = new FormData();
-                    console.log(this.form);
                     formData.append('campusId', this.form.campusId);
                     formData.append('collegeName', this.form.collegeName);
                     formData.append('shortDes', this.form.shortDes);
+                    formData.append('webUrl', this.form.webUrl);
                     formData.append('file',this.$refs.fileType.files[0]);
-                    formData.append('token', '886a');
-                    console.log(this.$store.state.UrlIP + '/college/insertData');
+                    formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
                         url: this.$store.state.UrlIP + '/college/insertData',
                         method: "post",
-                        params: {
-                            campusId: formData.get('campusId'),
-                            collegeName: formData.get('collegeName'),
-                            shortDes: formData.get('shortDes'),
-                            file: formData.get('file'),
-                            token: formData.get('token')
-                        },
+                        data: formData,
                         headers: {
                             "Content-type": "multipart/form-data",
                         },
@@ -355,16 +357,10 @@ export default {
             })
         },
 
-
-        handleChange(file, fileList) {
-            this.fileList = fileList.slice(-2);
-        },
-
         /**
          * 修改学院数据
          */
         updateInfo(row,index){
-            console.log(row);
             this.index = index;
             this.msg=row;
             this.updateVisible=true;
@@ -385,25 +381,17 @@ export default {
             this.$refs['form'].validate((valid)=>{
                 if (valid) {
                     let formData = new FormData();
-                    console.log(this.form);
+                    formData.append('collegeId', this.msg.collegeId);
                     formData.append('campusId', this.form.campusId);
                     formData.append('collegeName', this.form.collegeName);
                     formData.append('shortDes', this.form.shortDes);
+                    formData.append('webUrl', this.form.webUrl);
                     formData.append('file',this.$refs.fileType.files[0]);
-                    formData.append('token', '886a');
-                    console.log();
-                    console.log(this.$refs.fileType.files[0]);
+                    formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
                         url: this.$store.state.UrlIP + '/college/updateData',
                         method: "post",
-                        params: {
-                            campusId: formData.get('campusId'),
-                            // collegeName: formData.get('collegeName'),
-                            shortDes: formData.get('shortDes'),
-                            file: this.$refs.fileType.files[0],
-                            token: formData.get('token'),
-                            collegeId: this.msg.collegeId,
-                        },
+                        data: formData,
                         headers: {
                             "Content-type": "multipart/form-data",
                         },
@@ -470,7 +458,6 @@ export default {
             })
         },
 
-
         //获得学院信息
         getColleagueList(){
             axios({
@@ -487,18 +474,16 @@ export default {
                 }
             }).then(res=>{
                 if (res.data.code==0) {
-                    console.log(res.data.data);
                     this.collegeList=res.data.data;
+                    this.collegeList.forEach(item => {
+                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
+                    })
                     this.totalCount=res.data.respPage.totalCount
                 }
             }).catch(error=>{
 
             })
         },
-
-
-
-
     },
 }
 </script>
@@ -513,5 +498,9 @@ a{
 .upload-demo{
     text-align: left;
     margin-left: 10px;
+}
+.item-imgs{
+    width: 20px;
+    height: 20px;
 }
 </style>

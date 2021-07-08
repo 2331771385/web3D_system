@@ -48,6 +48,13 @@
                 <font v-else>{{row.campusShortName}}</font>
             </template>
 
+            <!-- 显示图片信息 -->
+            <template slot-scope="{ row }" slot="picUrl">
+                <font>
+                    <img class="item-imgs" :src="row.picUrl" />
+                </font>
+            </template>
+
             <!-- <template slot-scope="{row}" slot="shortDes">
                 <font v-if="row.shortDes==null || row.shortDes==undefined">-</font>
                 <font v-else>{{row.shortDes}}</font>
@@ -210,13 +217,13 @@ export default {
                 //     minWidth:130,
                 //     align:'center'
                 // },
-                // {
-                //     title:'图片',
-                //     key: 'picUrl',
-                //     minWidth:130,
-                //     tooltip:'true',
-                //     align:'center'
-                // },
+                {
+                    title:'图片',
+                    slot: 'picUrl',
+                    minWidth:130,
+                    tooltip:'true',
+                    align:'center'
+                },
                 {
                     title:'修改时间',
                     slot: 'updateTime',
@@ -293,8 +300,6 @@ export default {
                             campusName:item.campusName
                         })
                     });
-                    // this.campus=6;
-                    // this.getPublicList();//获取公共服务的数据
                 }
             }).catch(err=>{
                 console.log(err);
@@ -315,9 +320,11 @@ export default {
                     'Content-type':'application/x-www-form-urlencoded'
                 }
             }).then(res=>{
-                console.log(res.data.data);
                 if (res.data.code==0) {
                     this.campusList=res.data.data;
+                    this.campusList.forEach(item => {
+                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`
+                    })
                     this.totalCount=res.data.respPage.totalCount
                 }
             }).catch(error=>{
@@ -331,7 +338,6 @@ export default {
         //修改操作
         updateInfo(row,index){
             this.updateVisible=true;
-            console.log(row);
             this.form={
                 campusId:row.campusId,//校园id
                 campusShortName:row.campusShortName,//校园简称
@@ -345,24 +351,24 @@ export default {
             }
         },
 
-
         //修改的确认操作
         saveAdd(){
+            let formData = new FormData();
+            formData.append('campusId', this.form.campusId);
+            formData.append('shortDes', this.form.shortDes);
+            formData.append('describe', this.form.describe);
+            formData.append('campusShortName', this.form.campusShortName);
+            formData.append('file',this.$refs.fileType.files[0]);
+            formData.append('token', window.localStorage.getItem('Authorization'));
+
             axios({
-                url:this.$store.state.UrlIP+'/campus/updateData',
-                method:'post',
-                params:{
-                    campusId:this.form.campusId,
-                    shortDes:this.form.shortDes,
-                    describe:this.form.describe,
-                    campusShortName:this.form.campusShortName,
-                    file:this.$refs.fileType.files[0],
-                    data:this.form.data
-                },
-                headers:{
+                url: this.$store.state.UrlIP+'/campus/updateData',
+                method: 'post',
+                data: formData,
+                headers: {
                     'Content-type':'multipart/form-data'
                 }
-            }).then(res=>{
+            }).then(res => {
                 if (res.data.code==0) {
                     this.$message({
                         dangerouslyUseHTMLString: true,
@@ -421,5 +427,9 @@ export default {
 .upload-demo{
     text-align: left;
     margin-left: 10px;
+}
+.item-imgs{
+    width: 20px;
+    height: 20px;
 }
 </style>

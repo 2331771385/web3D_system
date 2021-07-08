@@ -8,18 +8,18 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">校区:</span>
-                <Select v-model="campus" style="width:200px" clearable>
-                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
-                </Select>
+                <el-select v-model="campus" style="width:200px" clearable>
+                    <el-option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></el-option>
+                </el-select>
 
                 <span class="search-box-text">公共服务分类:</span>
-                <Select v-model="psortVal" 
+                <el-select v-model="psortVal" 
                         style="width:200px" 
                         clearable
                         @on-clear='getPublicList'
                 >
-                    <Option v-for="item in publicSortList" :key="item.id" :value="item.id">{{item.name}}</Option>
-                </Select>
+                    <el-option v-for="item in publicSortList" :key="item.id" :value="item.id">{{item.name}}</el-option>
+                </el-select>
                 <span class="search-box-text">模糊查询:</span>
                 <Input style="width:auto" 
                     v-model="search"
@@ -43,6 +43,20 @@
             <template slot-scope="{row}" slot="updateTime">
                 <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">{{row.createTime}}</font>
                 <font v-else>{{row.updateTime}}</font>
+            </template>
+
+            <!-- 显示图片信息 -->
+            <template slot-scope="{ row }" slot="picUrl">
+                <font>
+                    <img class="item-imgs" :src="row.picUrl" />
+                </font>
+            </template>
+
+            <!-- 显示图标信息 -->
+            <template slot-scope="{ row }" slot="iconUrl">
+                <font>
+                    <img class="item-imgs" :src="row.iconUrl" />
+                </font>
             </template>
 
             <template slot-scope="{row}" slot="state">
@@ -71,22 +85,6 @@
             </Page>
         </template>
 
-
-        <!-- 新增公共服务项 -->
-        <!-- <template v-if="addPublic">
-            <v-dialog
-                :addVisible='addVisible'
-                :addRow='form'
-                :addPublic='addPublic'
-                :publicSortList="publicSortList"
-                :campusList='campusList'
-                @addSuccess='addSuccess'
-                @cancelAdd='cancelAdd'
-            >
-
-            </v-dialog>
-        </template> -->
-
         <!-- 新增数据项 -->
         <el-dialog  title="新增公共服务信息" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
@@ -112,12 +110,19 @@
                 </el-form-item>
 
                 <el-form-item label="公共服务类型:" prop="serviceTypeId">
-                    <el-input
+                    <el-select 
                         v-model="form.serviceTypeId"
-                        placeholder="公共服务类型"
                         style="width:300px;margin-bottom:5px"
                         clearable
-                    ></el-input>
+                    >
+                        <el-option 
+                            v-for="item in publicSortList" 
+                            :key="item.id" 
+                            :value="item.id"
+                            :label="item.name"
+                        >
+                        </el-option>
+                    </el-select>
                 </el-form-item>
 
                 <el-form-item label="简介:">
@@ -136,36 +141,9 @@
                     ></el-input>
                 </el-form-item>
 
-                <!-- 图标 -->
-                <el-form-item label="图标:" >
-                    <!-- <el-input
-                        v-model="form.label"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input> -->
-                    <el-upload
-                        class="upload-demo"
-                        action="http://211.87.231.41:8089"
-                        :on-change="handleChange"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                    </el-upload>
-                </el-form-item>
-
                 <!-- 图片 -->
                 <el-form-item label="图片:" >
-                    <!-- <el-input
-                        v-model="form.file"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input> -->
-                    <el-upload
-                        class="upload-demo"
-                        action="http://211.87.231.41:8089"
-                        :on-change="handleChange1"
-                        :file-list="fileList1">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                    </el-upload>
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
             </el-form>
 
@@ -174,10 +152,6 @@
                 <el-button class="tableBtn" type="primary" @click="saveAdd('form')">确定</el-button>
             </span>
         </el-dialog>
-
-
-
-
 
         <!-- 修改数据项 -->
         <el-dialog  title="修改公共服务信息" :visible.sync="updateVisible" width="480px">
@@ -230,36 +204,9 @@
                     ></el-input>
                 </el-form-item>
 
-                <!-- 图标 -->
-                <el-form-item label="图标:" >
-                    <!-- <el-input
-                        v-model="form.label"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input> -->
-                    <el-upload
-                        class="upload-demo"
-                        action="http://211.87.231.41:8089"
-                        :on-change="handleChange"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                    </el-upload>
-                </el-form-item>
-
                 <!-- 图片 -->
                 <el-form-item label="图片:" >
-                    <!-- <el-input
-                        v-model="form.file"
-                        style="width:300px;margin-bottom:5px"
-                    ></el-input> -->
-                    <el-upload
-                        class="upload-demo"
-                        action="http://211.87.231.41:8089"
-                        :on-change="handleChange1"
-                        :file-list="fileList1">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-                    </el-upload>
+                    <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
             </el-form>
 
@@ -314,13 +261,13 @@ export default {
                     align:'center'
                 },{
                     title:'图标',
-                    key: 'iconUrl',
+                    slot: 'iconUrl',
                     tooltip:'true',
                     minWidth:130,
                     align:'center'
                 },{
                     title:'图片',
-                    key: 'picUrl',
+                    slot: 'picUrl',
                     minWidth:130,
                     tooltip:'true',
                     align:'center'
@@ -373,8 +320,7 @@ export default {
                     {required: true, message: '校区名称不能为空', trigger: 'blur'}
                 ]
             },
-            fileList:[],
-            fileList1:[],
+            msg: '',
         }
     },
     watch: {
@@ -383,16 +329,19 @@ export default {
         }
     },
     created() {
-        
          this.getCampusList();
     },
     methods: {
-        handleChange(file, fileList) {
-            this.fileList = fileList.slice(-2);
+        changeImage(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader()
+            var that = this
+            reader.readAsDataURL(file)
+            reader.onload = function(e) {
+                that.avatar = this.result
+            }
         },
-        handleChange1(file, fileList) {
-            this.fileList1 = fileList.slice(-2);
-        },
+        
          /**
          * 获取校区信息
          */
@@ -442,10 +391,14 @@ export default {
                 }
             }).then(res=>{
                 if (res.data.code==0) {
-                    console.log(res.data.data);
                     this.dataList=res.data.data;
+                    this.dataList.forEach(item => {
+                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
+                        item.iconUrl = `http://211.87.231.41:8089${item.iconUrl}`
+                    })
                     this.totalCount=res.data.respPage.totalCount
                     res.data.data.forEach(item => {
+                        console.log(item);
                         if (this.publicSortList.length==0) {
                             this.publicSortList.push({
                                 id:item.serviceTypeId,
@@ -488,20 +441,20 @@ export default {
         saveAdd(name){
             this.$refs[name].validate(valid=>{
                 if (valid) {
+                    let formData = new FormData();
+                    formData.append('serviceName', this.form.serviceName);
+                    formData.append('serviceTypeId', this.form.serviceTypeId);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('shortDes', this.form.shortDes);
+                    formData.append('describe', this.form.describe);
+                    formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
-                        url:this.$store.state.UrlIP+'/publicService/insertData',
-                        method:'post',
-                        params:{
-                            serviceName:this.form.serviceName,
-                            serviceTypeId:this.form.serviceTypeId,
-                            campusId:this.form.campusId,
-                            shortDes:this.form.shortDes,
-                            describe:this.form.describe,
-                            data:this.form.data,
-                            file:this.form.file
-                        },
+                        url: this.$store.state.UrlIP+'/publicService/insertData',
+                        method: 'post',
+                        data: formData,
                         headers:{
-                            'Content-type':'application/x-www-form-urlencoded'
+                            'Content-type':'multipart/form-data'
                         }
                     }).then(res=>{
                         if (res.data.code==0) {
@@ -564,6 +517,8 @@ export default {
 
         //修改操作
         updateInfo(row,index){
+            this.msg = row;
+            console.log(row);
             this.form={
                 serviceName:row.serviceName,
                 serviceTypeId:row.serviceId,
@@ -582,18 +537,19 @@ export default {
         saveUpd(name){
             this.$refs[name].validate((valid)=>{
                 if (valid) {
+                    let formData = new FormData();
+                    formData.append('serviceId', this.msg.serviceId);
+                    formData.append('serviceName', this.form.serviceName);
+                    formData.append('serviceTypeId', this.form.serviceTypeId);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('shortDes', this.form.shortDes);
+                    formData.append('describe', this.form.describe);
+                    formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
                         url:this.$store.state.UrlIP+'/publicService/updateData',
                         method:'post',
-                        params:{
-                            serviceId:this.form.serviceId,
-                            campusId:this.form.campusId,
-                            serviceName:this.form.serviceName,
-                            serviceTypeId:this.form.serviceTypeId,
-                            shortDes:this.form.shortDes,
-                            describe:this.form.describe,
-                            file:this.form.file,
-                        },
+                        data: formData  ,
                         headers:{
                             'Content-type':'multipart/form-data'
                         }
@@ -656,6 +612,10 @@ export default {
 .upload-demo{
     text-align: left;
     margin-left: 10px;
+}
+.item-imgs {
+    width: 20px;
+    height: 20px;
 }
 </style>
 <style>

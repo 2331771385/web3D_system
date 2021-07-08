@@ -29,6 +29,12 @@
                 <font v-else>{{row.createTime}}</font>
             </template>
 
+            <template slot-scope="{row}" slot="picture">
+                <font >
+                    <img :src="row.picture" class = "item-img" />
+                </font>
+            </template>
+
             <!-- 更新时间 -->
             <template slot-scope="{row}" slot="updateTime">
                 <font v-if="row.updateTime==null || row.updateTime==undefined">{{row.createTime}}</font>
@@ -71,6 +77,7 @@
                 :updDialog='updDialog'
                 :updVisible='updVisible'
                 :updRow='form'
+                :row ='msg'
                 @updSuccess='updSuccess'
                 @updCancal='updCancal'
             >
@@ -117,7 +124,7 @@ export default {
                     align:'center'
                 },{
                     title:'图标',
-                    key: 'picture',
+                    slot: 'picture',
                     minWidth:130,
                     align:'center'
                 },{
@@ -158,23 +165,23 @@ export default {
                 url:this.$store.state.UrlIP+'/building/getTypeData',
                 method:'get',
                 params:{
-                    pageIndex:this.currentPage,
-                    pageSize:this.pageSize,
-                    key:this.search,
-                    token:'886a'
+                    pageIndex: this.currentPage,
+                    pageSize: this.pageSize,
+                    key: this.search,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
-                    res.data.data.forEach(item=>{
+                    res.data.data.forEach(item => {
                         this.dataList.push({
                             typeId:item.buildTypeId,
                             typeName:item.buildTypeName,
                             createTime:item.createTime,
                             updateTime:item.updateTime,
-                            picture:item.iconUrl
+                            picture: `http://211.87.231.41:8089${item.iconUrl}`
                         })
                     })
                 }
@@ -197,15 +204,11 @@ export default {
          */
         addSuccess(data){
             axios({
-                url:this.$store.state.UrlIP+'/building/insertTypeData',
-                method:'post',
-                params:{
-                    buildTypeName:data.typeName,
-                    file:data.picture,
-                    token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
+                url: this.$store.state.UrlIP+'/building/insertTypeData',
+                method: 'post',
+                data,
+                headers: {
+                    'Content-type': 'multipart/form-data'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
@@ -233,6 +236,7 @@ export default {
          * 修改分类信息
          */
         updateInfo(row,index){
+            this.msg = row;
             this.form={
                 typeId:row.typeId,
                 typeName:row.typeName,
@@ -247,16 +251,11 @@ export default {
          */
         updSuccess(data){
             axios({
-                url:this.$store.state.UrlIP+'/building/updateTypeData',
-                method:'post',
-                params:{
-                    buildTypeId:data.typeId,
-                    buildTypeName:data.typeName,
-                    file:data.picture,
-                    token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
+                url: this.$store.state.UrlIP+'/building/updateTypeData',
+                method: 'post',
+                data,
+                headers: {
+                    'Content-type': 'multipart/form-data'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
@@ -288,5 +287,9 @@ export default {
 .ivu-icon-ios-apps{
     float: left !important;
     margin-top: 2px !important;
+}
+.item-img {
+    width: 20px;
+    height: 20px;
 }
 </style>
