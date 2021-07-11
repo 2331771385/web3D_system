@@ -154,6 +154,7 @@ export default {
                     endTime: this.timeDate[1],
                     pageIndex: this.currentPage,
                     pageSize: this.pageSize,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers: {
                  "Content-type": "application/x-www-form-urlencoded",

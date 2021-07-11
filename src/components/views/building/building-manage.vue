@@ -18,7 +18,7 @@
                 </el-select>
 
                 <span class="search-box-text">模糊查询:</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="建筑名称、类型名称关键字"
                     clearable
@@ -51,6 +51,12 @@
             <template slot-scope="{ row }" slot="picUrl">
                 <font>
                     <img class="item-imgs" :src="row.picUrl" />
+                </font>
+            </template>
+
+            <template slot-scope="{ row }" slot="iconUrl">
+                <font>
+                    <img class="item-imgs" :src="row.iconUrl" />
                 </font>
             </template>
 
@@ -94,7 +100,7 @@
         
          <el-dialog  title="添加建筑信" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules='ruleValidate' class="demo-ruleForm">
-                <el-form-item label="校区名称:" >
+                <el-form-item label="校区名称:" prop="campusId">
                     <el-select  v-model="form.campusId" style="width:300px;margin-bottom:5px">
                         <el-option
                             v-for="item in campusList" 
@@ -105,7 +111,7 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label='建筑分类:'>
+                <el-form-item label='建筑分类:' prop="buildTypeId">
                     <el-select v-model="form.buildTypeId" style="width:300px;margin-bottom:5px" clearable>
                         <el-option 
                             v-for="item in buildingSortList" 
@@ -125,6 +131,15 @@
                     <el-input v-model="form.shortDes" placeholder="建筑简介" style="width:300px;margin-bottom:5px" clearable></el-input>
                 </el-form-item>
                 
+                <el-form-item label="建筑数据:" >
+                     <el-input 
+                        v-model="form.data" 
+                        placeholder="建筑数据" 
+                        style="width:300px;margin-bottom:5px" 
+                        clearable
+                    >
+                    </el-input>
+                </el-form-item>
 
                 <!-- 图片 -->
                 <el-form-item label="图片:" >
@@ -205,18 +220,26 @@ export default {
                 {
                     title:'图片 ',
                     slot: 'picUrl',
-                    minWidth:120,
+                    width:90,
                     tooltip:'true',
                     align:'center',
                 },
                 {
-                    title:'修改时间',
-                    slot: 'updateTime',
-                    minWidth:100,
+                    title:'图标 ',
+                    slot: 'iconUrl',
+                    width:90,
                     tooltip:'true',
                     align:'center',
-                    className: 'test-name'
-                },{
+                },
+                // {
+                //     title:'修改时间',
+                //     key: 'updateTime',
+                //     minWidth:100,
+                //     tooltip:'true',
+                //     align:'center',
+                //     className: 'test-name'
+                // },
+                {
                     title:'状态',
                     slot: 'state',
                     //  minWidth:'90px',
@@ -240,6 +263,7 @@ export default {
             addVisible:false,
             updBuilding:false,
             form:{
+                data: '',
                 des:'',
                 buildName:'',
                 file:'',
@@ -252,13 +276,26 @@ export default {
             ruleValidate:{
                 buildName: [
                     { required: true, message: '建筑名称不能为空', trigger: 'blur' }
-                ]
+                ],
+                campusId: [
+                    { required: true, message: '校区名称不能为空', trigger: 'blur' }
+                ],
+                buildTypeId: [
+                    { required: true, message: '分类名称不能为空', trigger: 'blur' }
+                ],
             }
         }
     },
     created() {
         // this.getBuildingSort();
         this.getCampusList();
+    },
+    watch: {
+        campus:function(newVal,oldVal){
+            if (newVal !== oldVal) {
+                this.campus = newVal;
+            }
+        }
     },
     methods: {
         changeImage(e) {
@@ -293,7 +330,8 @@ export default {
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
                     key:this.search,
-                    buildTypeId:this.bsortVal
+                    buildTypeId:this.bsortVal,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -310,6 +348,7 @@ export default {
                     });
                     this.dataList=res.data.data;
                     this.dataList.forEach(item => {
+                        item.iconUrl = `http://211.87.231.41:8089${item.iconUrl}`;
                         item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
                     })
                 }
@@ -327,7 +366,8 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'10'
+                    pageSize:'10',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -351,6 +391,7 @@ export default {
 
         addInfo(){
             this.form={
+                data: '',
                 des:'',
                 buildName:'',
                 file:'',
@@ -376,14 +417,16 @@ export default {
             this.pageSize=val;
             this.getBuildingList();
         },
+
         updateInfo(row,index){
             this.msg=row;
             this.index=index;
             this.form={
+                data: this.msg.data,
                 des:this.msg.describe,
                 buildName:this.msg.buildName,
                 buildId:this.msg.buildId,
-                file:'',
+                file: '',
                 buildType:this.msg.buildTypeName,
                 shortDes:this.msg.shortDes,
                 campusId:this.msg.campusId,
@@ -400,7 +443,8 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'10'
+                    pageSize:'10',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -430,6 +474,7 @@ export default {
                     formData.append('campusId', this.form.campusId);
                     formData.append('buildName', this.form.buildName);
                     formData.append('file',this.$refs.fileType.files[0]);
+                    formData.append('data',this.form.data);
                     formData.append('describe',this.form.des);
                     formData.append('shortDes',this.form.shortDes);
                     formData.append('token', window.localStorage.getItem('Authorization'));
@@ -454,41 +499,15 @@ export default {
                     })
                 }
             })
-            console.log(data);
-            axios({
-                url:this.$store.state.UrlIP+'/building/insertData',
-                method:'post',
-                params:{
-                    buildTypeId:data.buildTypeId,
-                    campusId:data.campusId,
-                    buildName:data.buildName,
-                    shortDes:data.shortDes,
-                    describe:data.des,
-                    file:'',
-                    token:'886a'
-                },
-                headers:{
-                    'Content-type':'application/x-www-form-urlencoded'
-                }
-            }).then(res=>{
-                if (res.data.code==0) {
-                    this.$Message['success']({
-                        background: true,
-                        content:'操作成功！'
-                    })
-                    this.getBuildingList();
-                    this.addVisible=false;
-                }
-            }).catch(err=>{
-                console.log(err);
-            })
         },
 
         cancelUpd(){
             this.updVisible=false;
             this.updBuilding=false;
         },
+
         updSuccess(data){
+            console.log(data);
             axios({
                 url: this.$store.state.UrlIP+'/building/updateData',
                 method: 'post',
@@ -522,6 +541,7 @@ export default {
                 }
             });
         },
+
         handleDelete(buildId) {
             this.$axios({
                 url: this.$store.state.UrlIP + '/building/updateData',
@@ -529,7 +549,7 @@ export default {
                 params: {
                     buildId: buildId,
                     state: 1,
-                    token: '886a'
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'multipart/form-data'
@@ -562,4 +582,23 @@ export default {
     width: 20px;
     height: 20px;
 }
+</style>
+<style>
+.ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
+
 </style>

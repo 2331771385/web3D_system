@@ -9,7 +9,7 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">模糊查询：</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="角色名称、描述关键字"
                     clearable
@@ -167,7 +167,7 @@ export default {
               {
                   title:'角色名称',
                   key:'roleName',
-                  width:'130px',
+                  minWidth:130,
                   align:'center'
               },{
                   title:'角色描述',
@@ -250,14 +250,14 @@ export default {
                 params:{
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
-                    key:this.search
+                    key:this.search,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
-                    console.log(res.data.data);
                     this.roleList=res.data.data;
                     this.totalCount=res.data.respPage.totalCount;
                 }
@@ -286,14 +286,14 @@ export default {
                         method:'get',
                         params:{
                             roleName:this.form.roleName,
-                            roleDescription:this.form.roleDescription
+                            roleDescription:this.form.roleDescription,
+                            token: window.localStorage.getItem('Authorization')
                         },
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
                         }
                     }).then(res=>{
                         if (res.data.code==0) {
-                            console.log(res.data.data);
                             this.$message({
                                 dangerouslyUseHTMLString: true,
                                 message: "<span style='font-size: 20px;margin-left: 20px'>添加成功！</span>",
@@ -354,7 +354,8 @@ export default {
                         params:{
                             roleID:this.form.roleId,
                             roleName:this.form.roleName,
-                            roleDescription:this.form.roleDescription
+                            roleDescription:this.form.roleDescription,
+                            token: window.localStorage.getItem('Authorization')
                         },
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
@@ -425,7 +426,8 @@ export default {
                     method: "get",
                     params: {
                         roleId: this.mes.roleID,
-                        state: index
+                        state: index,
+                        token: window.localStorage.getItem('Authorization')
                     },
                     headers: {
                         "Content-type": "application/x-www-form-urlencoded"
@@ -507,4 +509,20 @@ export default {
     font-size: 35px !important;
     font-weight: bold;
   }
+.ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
 </style>

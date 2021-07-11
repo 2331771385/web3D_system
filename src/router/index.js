@@ -51,6 +51,15 @@ const freeRoute = [
         }
       },
       {
+        path:'/colleague-sort',
+        name:"colleague-sort",
+        component:resolve => require(['../components/views/colleague/colleague-sort.vue'], resolve),
+        meta: {
+          title: '学院类型管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
         path:'/building-manage',
         name:"building-manage",
         component:resolve => require(['../components/views/building/building-manage.vue'], resolve),
@@ -73,6 +82,15 @@ const freeRoute = [
         component:resolve => require(['../components/views/public/public-manage.vue'], resolve),
         meta: {
           title: '公共服务数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path:'/public-sort',
+        name:"public-sort",
+        component:resolve => require(['../components/views/public/public-sort.vue'], resolve),
+        meta: {
+          title: '公共服务分类管理',
           // icon:'el-icon-setting'
         }
       },

@@ -10,17 +10,21 @@
             >
                 <Form ref="formAddValid" :model="tempAddRow" :rules='ruleValidate' :label-width='115'>
                     <FormItem label='建筑分类名称:' prop='typeName'>
-                        <Input v-model="tempAddRow.typeName" placeholder="请输入建筑分类名称"></Input>
+                        <Input v-model="tempAddRow.typeName" placeholder="请输入建筑分类名称" />
                     </FormItem>
 
-                    <FormItem label='图标:'>
-                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                    <FormItem label='建筑分类序号:'>
+                        <Input type="number" v-model="tempAddRow.sortIndex" placeholder="请输入建筑分类序号" />
                     </FormItem>
+
+                    <!-- <FormItem label='图标:'>
+                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                    </FormItem> -->
                 </Form>
             </Modal>
         </template>
 
-    <!-- 修改建筑分类信息 -->
+         <!-- 修改建筑分类信息 -->
         <template v-if="tempUdpDialog">
             <Modal v-model="tempUpd" 
                     width='400' 
@@ -29,7 +33,7 @@
                     @on-cancel='updCancal'
             >
                 <Form ref="formUpdValid" :model="tempUpdRow" :rules='ruleValidate' :label-width='115'>
-                    <FormItem label='建筑分类ID:' prop='typeName'>
+                    <FormItem label='建筑分类ID:'>
                         <Input v-model="tempUpdRow.typeId" disabled />
                     </FormItem>
 
@@ -37,9 +41,12 @@
                         <Input v-model="tempUpdRow.typeName" clearable />
                     </FormItem>
 
-                    <FormItem label='图标:'>
-                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                    <FormItem label='建筑分类序号:'>
+                        <Input type="number" v-model="tempUpdRow.sortIndex" placeholder="请输入建筑分类序号" />
                     </FormItem>
+                    <!-- <FormItem label='图标:'>
+                        <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
+                    </FormItem> -->
                 </Form>
             </Modal>
         </template>
@@ -68,6 +75,9 @@ export default {
             ruleValidate:{
                 typeName: [
                     { required: true, message: '建筑分类名称不能为空', trigger: 'blur' }
+                ],
+                sortIndex: [
+                    { required: true, message: '分类排序序号不能为空', trigger: 'blur' }
                 ]
             }
         }
@@ -95,7 +105,8 @@ export default {
                     let formData = new FormData();
                     formData.append("buildTypeName", this.tempAddRow.typeName);
                     formData.append("token", window.localStorage.getItem('Authorization'));
-                    formData.append("file", this.$refs.fileType.files[0]);
+                    formData.append('sortIndex', this.tempAddRow.sortIndex)
+                    // formData.append("file", this.$refs.fileType.files[0]);
                     this.$emit('addSuccess',formData);
                 }else{
 
@@ -108,15 +119,17 @@ export default {
 
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
+                console.log(valid);
                 if (valid) {
                     let formData = new FormData();
                     formData.append("buildTypeId", this.row.typeId);
                     formData.append("buildTypeName", this.tempUpdRow.typeName);
                     formData.append("token", window.localStorage.getItem('Authorization'));
-                    formData.append("file", this.$refs.fileType.files[0]);
+                    formData.append('sortIndex', this.tempUpdRow.sortIndex)
+                    // formData.append("file", this.$refs.fileType.files[0]);
                     this.$emit('updSuccess', formData);
                 }else{
-
+                    console.log('出错了');
                 }
             })
         },

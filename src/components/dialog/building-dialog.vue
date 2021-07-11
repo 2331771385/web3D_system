@@ -9,8 +9,8 @@
             >
                 <Form ref="formUpdValid" :model="tempUpdBuilding" :rules='ruleValidate' :label-width='105'>
                     
-                    <FormItem label='校区名称:'>
-                        <Select v-model="tempUpdBuilding.campusId" filterable clearable>
+                    <FormItem label='校区名称:' prop='campusId'>
+                        <Select disabled v-model="tempUpdBuilding.campusId" filterable clearable>
                             <Option v-for="item in tempCampusListArr" :key="item.id" :label="item.campusName" :value="item.id"></Option>
                         </Select>
                     </FormItem>
@@ -29,6 +29,10 @@
                     </FormItem>
                     <FormItem label='建筑简介:'>
                         <Input v-model="tempUpdBuilding.shortDes" clearable />
+                    </FormItem>
+
+                    <FormItem label='建筑数据:'>
+                        <Input v-model="tempUpdBuilding.data" clearable />
                     </FormItem>
                     
                     <FormItem label='图片:'>
@@ -64,6 +68,9 @@ export default {
             ruleValidate:{
                 buildName: [
                     { required: true, message: '建筑名称不能为空', trigger: 'blur' }
+                ],
+                campusId: [
+                    {required: true, message: '校区名称不能为空', trigger: 'blur'}
                 ]
             }
         }
@@ -87,20 +94,17 @@ export default {
         
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
-                if (valid) {
-                    let formData = new FormData();
-                    formData.append("buildTypeId", this.tempUpdBuilding.buildTypeId);
-                    formData.append("campusId", this.tempUpdBuilding.campusId);
-                    formData.append("buildName", this.tempUpdBuilding.buildName);
-                    formData.append("shortDes", this.tempUpdBuilding.shortDes);
-                    formData.append("describe", this.tempUpdBuilding.describe);
-                    formData.append("buildId", this.tempUpdBuilding.buildId);
-                    formData.append("token", window.localStorage.getItem('Authorization'));
-                    formData.append("file", this.$refs.fileType.files[0]);
-                    this.$emit('updSuccess', formData)
-                }else{
-                    console.log('出错了');
-                }
+                let formData = new FormData();
+                formData.append("buildTypeId", this.tempUpdBuilding.buildTypeId);
+                formData.append("campusId", this.tempUpdBuilding.campusId);
+                formData.append("buildName", this.tempUpdBuilding.buildName);
+                formData.append("shortDes", this.tempUpdBuilding.shortDes);
+                formData.append("describe", this.tempUpdBuilding.des);
+                formData.append("buildId", this.tempUpdBuilding.buildId);
+                formData.append("token", window.localStorage.getItem('Authorization'));
+                formData.append("file", this.$refs.fileType.files[0]);
+                formData.append("data", this.tempUpdBuilding.data);
+                this.$emit('updSuccess', formData)
             })
         },
         cancelUpd(){

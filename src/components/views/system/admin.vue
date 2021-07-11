@@ -8,7 +8,7 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">模糊查询：</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="登陆账号、昵称关键字"
                     clearable
@@ -286,7 +286,6 @@ export default {
         this.getAdminList();
     },
     watch: {
-        
         msg:{
             deep:true,
             handler:function(newVal,old){
@@ -306,13 +305,13 @@ export default {
                 params:{
                     pageIndex:'1',
                     pageSize:'1000',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
                 }
             }).then(res=>{
                 if (res.data.code==0) {
-                    console.log(res.data.data);
                     res.data.data.forEach(item=>{
                         this.roleList.push({
                             id:item.roleID,
@@ -324,7 +323,6 @@ export default {
                 console.log(err);
             })
         },
-
 
         /**
          * 回车操作
@@ -339,7 +337,8 @@ export default {
                 params:{
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
-                    key:this.search
+                    key:this.search,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -353,8 +352,6 @@ export default {
                 console.log(err);
             })
         },
-
-
         /**
          * 修改操作
          */
@@ -387,7 +384,8 @@ export default {
                         params:{
                             nickName:this.form.nickName,
                             passwordMD5:this.$md5(this.form.newpasswordMD5),
-                            adminID:this.form.adminID
+                            adminID:this.form.adminID,
+                            token: window.localStorage.getItem('Authorization')
                         },
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
@@ -425,7 +423,8 @@ export default {
                         method:'get',
                         params:{
                             adminID:this.form.adminID,
-                            roleId:this.form.roleName
+                            roleId:this.form.roleName,
+                            token: window.localStorage.getItem('Authorization')
                         },
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
@@ -456,9 +455,6 @@ export default {
             })
         },
 
-
-
-
         //停用/启用按钮
         startInfo(row,index) {
             this.index = index;
@@ -481,9 +477,9 @@ export default {
                 url: this.$store.state.UrlIP + "/admin/updateAdminState",
                 method: "get",
                 params: {
-                    // token: localStorage.getItem("Authorization"),
                     adminId: this.mes.AdminID,
                     state: index,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers: {
                     "Content-type": "application/x-www-form-urlencoded",
@@ -537,11 +533,11 @@ export default {
          * 添加操作
          */
         addInfo(){
-            this.form={
+            this.form = {
                 adminID: null,
                 roleID: null,
                 loginName: "",
-                nickName: "",
+                nickName: '',
                 passwordMD5: "",
                 oldpasswordMD5: "",
                 newpasswordMD5: "",
@@ -549,14 +545,14 @@ export default {
                 updpasswordMD5:'',
                 roleName: "",
                 dataName: "",
-            }
+            };
+            console.log(this.form);
             this.addVisible=true;
         },
 
         saveAdd(name){
             this.$refs[name].validate(valid=>{
                 if (valid) {
-                    
                     axios({
                         url:this.$store.state.UrlIP+'/admin/insertAdmin',
                         method:'get',
@@ -565,6 +561,7 @@ export default {
                             nickName:this.form.nickName,
                             passwordMD5:this.$md5(this.form.passwordMD5),
                             roleID:this.form.roleName,
+                            token: window.localStorage.getItem('Authorization')
                         },
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
@@ -627,7 +624,6 @@ export default {
 }
 </style>
 <style>
-
 .el-message{
     height: 100px;
     width: 600px;
@@ -639,3 +635,20 @@ export default {
     font-size: 35px !important;
     font-weight: bold;
   }
+  .ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
+</style>

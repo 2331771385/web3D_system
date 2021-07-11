@@ -18,7 +18,7 @@
                 </Select> -->
 
                 <span class="search-box-text">模糊查询:</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="校区名称，校区简称关键字"
                     clearable
@@ -38,10 +38,10 @@
                 [{{row.cityId}}] {{row.city}}
             </template>
 
-            <template slot-scope="{row}" slot="updateTime">
+            <!-- <template slot-scope="{row}" slot="updateTime">
                 <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">-</font>
                 <font v-else>{{row.updateTime}}</font>
-            </template>
+            </template> -->
 
             <template slot-scope="{row}" slot="campusShortName">
                 <font v-if="row.campusShortName==null || row.campusShortName==undefined">-</font>
@@ -68,18 +68,12 @@
 
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
-                <font v-if="row.state==0">
-                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
-                </font>
-                <font v-else-if="row.state==1">
-                    <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
-                </font>
             </template>
         </Table>
 
         <!-- 分页操作 -->
         <template> 
-            <Page class="pageIndex" :total='totalCount' size='small' 
+            <Page class="page-footer" :total='totalCount' size='small' 
                 show-elevator show-sizer show-total
                 @on-change='changePage'
                 @on-page-size-change='changePagesize'
@@ -104,22 +98,20 @@
                     </el-select>
                 </el-form-item>
 
-
-                <el-form-item label="校区简称:">
-                    <el-input
-                        v-model="form.campusShortName"
-                        style="width:300px;margin-bottom:5px"
-                        clearable
-                        disabled
-                    ></el-input>
-                </el-form-item>
-
                 <el-form-item label="所在城市:">
                     <el-input
                         v-model="form.cityName"
                         style="width:300px;margin-bottom:5px"
                         clearable
                         disabled
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="校区简称:">
+                    <el-input
+                        v-model="form.campusShortName"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
                     ></el-input>
                 </el-form-item>
 
@@ -135,6 +127,14 @@
                     <el-input
                         v-model="form.shortDes"
                         placeholder="校区简介"
+                        style="width:300px;margin-bottom:5px"
+                    ></el-input>
+                </el-form-item>
+
+                <el-form-item label="校区数据:">
+                    <el-input
+                        v-model="form.data"
+                        placeholder="校区数据"
                         style="width:300px;margin-bottom:5px"
                     ></el-input>
                 </el-form-item>
@@ -184,10 +184,10 @@ export default {
                     width:'200px',
                     align:'center'
                 },{
-                    title:'校区名称简称',
+                    title:'名称简称',
                     slot: 'campusShortName',
                     //  minWidth:'90px',
-                    minWidth:150,
+                    width:100,
                     align:'center'
                 },{
                     title:'所在城市',
@@ -225,11 +225,11 @@ export default {
                     align:'center'
                 },
                 {
-                    title:'修改时间',
-                    slot: 'updateTime',
+                    title:'校园链接',
+                    key: 'webUrl',
                     tooltip:'true',
                     //  minWidth:'90px',
-                    minWidth:120,
+                    minWidth:140,
                     align:'center'
                 },{
                     title:'状态',
@@ -239,7 +239,7 @@ export default {
                     align:'center'
                 },{
                     title:'操作',
-                    width:'160px',
+                    width:'100px',
                     slot:'action',
                     align:'center'
                 }
@@ -287,7 +287,8 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'100'
+                    pageSize:'100',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -314,7 +315,8 @@ export default {
                     pageIndex:this.currentPage,
                     pageSize:this.pageSize,
                     key:this.search,
-                    campusId:this.campusId
+                    campusId:this.campusId,
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -323,6 +325,7 @@ export default {
                 if (res.data.code==0) {
                     this.campusList=res.data.data;
                     this.campusList.forEach(item => {
+                        console.log(item);
                         item.picUrl = `http://211.87.231.41:8089${item.picUrl}`
                     })
                     this.totalCount=res.data.respPage.totalCount
@@ -332,7 +335,7 @@ export default {
             })
         },
         clickSub(){
-
+            this.getCampusList();
         },
 
         //修改操作
@@ -360,6 +363,7 @@ export default {
             formData.append('campusShortName', this.form.campusShortName);
             formData.append('file',this.$refs.fileType.files[0]);
             formData.append('token', window.localStorage.getItem('Authorization'));
+            formData.append('data', this.form.data);
 
             axios({
                 url: this.$store.state.UrlIP+'/campus/updateData',
@@ -403,15 +407,6 @@ export default {
             })
         },
 
-        //停用操作
-        deleteInfo(row, index){
-            this.$Message['error']({
-                background: true,
-                content:'暂未开发'
-            });
-        },
-        //启用操作
-        startInfo(){},
         changePage(val){
             this.currentPage=val;
             this.getCampusList();
@@ -420,7 +415,7 @@ export default {
             this.pageSize=val;
             this.getCampusList();
         },
-
+       
     },
 }
 </script>
@@ -436,5 +431,10 @@ export default {
 .item-imgs{
     width: 20px;
     height: 20px;
+}
+.page-footer{
+    margin-top: 25px;
+    right: 0px;
+    position: absolute;
 }
 </style>

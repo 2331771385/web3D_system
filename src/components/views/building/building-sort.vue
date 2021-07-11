@@ -8,7 +8,7 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">模糊查询:</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="建筑分类名称关键字"
                     clearable
@@ -29,12 +29,6 @@
                 <font v-else>{{row.createTime}}</font>
             </template>
 
-            <template slot-scope="{row}" slot="picture">
-                <font >
-                    <img :src="row.picture" class = "item-img" />
-                </font>
-            </template>
-
             <!-- 更新时间 -->
             <template slot-scope="{row}" slot="updateTime">
                 <font v-if="row.updateTime==null || row.updateTime==undefined">{{row.createTime}}</font>
@@ -44,7 +38,7 @@
             <!-- 操作 -->
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
-                <!-- <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button> -->
+                <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button>
             </template>
         </Table>
 
@@ -110,8 +104,14 @@ export default {
                 },{
                     title:'建筑分类名称',
                     key: 'typeName',
-                    width:'150px',
+                    minWidth:150,
                     align:'center'
+                },{
+                    title:'排序ID',
+                    key: 'sortIndex',
+                    width:90,
+                    align:'center',
+                    className: 'test-name'
                 },{
                     title:'创建时间',
                     slot: 'createTime',
@@ -123,11 +123,6 @@ export default {
                     minWidth:100,
                     align:'center'
                 },{
-                    title:'图标',
-                    slot: 'picture',
-                    minWidth:130,
-                    align:'center'
-                },{
                     title:'操作',
                     width:'160px',
                     slot:'action',
@@ -137,7 +132,8 @@ export default {
             form:{
                 typeId:'',
                 typeName:'',
-                picture:''
+                picture:'',
+                sortIndex: ''
             },
             msg:'',
             addDialog:false,
@@ -181,10 +177,12 @@ export default {
                             typeName:item.buildTypeName,
                             createTime:item.createTime,
                             updateTime:item.updateTime,
-                            picture: `http://211.87.231.41:8089${item.iconUrl}`
+                            picture: `http://211.87.231.41:8089${item.iconUrl}`,
+                            sortIndex: item.sortIndex
                         })
                     })
                 }
+                this.totalCount=res.data.respPage.totalCount;
             }).catch(err=>{
                 console.log(err);
             })
@@ -192,13 +190,20 @@ export default {
         addInfo(){
             this.form={
                 typeName:'',
-                picture:''
+                picture:'',
+                sortIndex: ''
             };
             this.addDialog=true;
             this.addVisible=true;
         },
-        changePage(){},
-        changePagesize(){},
+        changePage(val){
+            this.currentPage = val;
+            this.getBuildingList();
+        },
+        changePagesize(val){
+            this.pageSize = val;
+            this.getBuildingList();
+        },
         /**
          * 添加信息的接口
          */
@@ -240,7 +245,7 @@ export default {
             this.form={
                 typeId:row.typeId,
                 typeName:row.typeName,
-                picture:row.picture 
+                sortIndex: row.sortIndex
             };
             this.updDialog=true;
             this.updVisible=true;
@@ -280,6 +285,45 @@ export default {
             this.updVisible=false;
         },
 
+        deleteInfo(row, index) {
+            console.log(row);
+            this.$Modal.confirm({
+                title: '注意',
+                content: '是否删除该分类及其相关信息？',
+                onOk: () => {
+                    this.handleDelete(row.typeId);
+                },
+                onCancel: () => {
+                    this.$Message.info('取消删除');
+                }
+            });
+        },
+        handleDelete(typeId) {
+            axios({
+                url: this.$store.state.UrlIP + '/building/updateTypeData',
+                method: 'post',
+                params: {
+                    buildTypeId: typeId,
+                    state: 1,
+                    token: window.localStorage.getItem('Authorization'),
+                    sortIndex: ''
+                },
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }).then(res => {
+                if(res.data.code == 0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    });
+                    this.getBuildingList();
+                }
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+
     },
 }
 </script>
@@ -292,4 +336,23 @@ export default {
     width: 20px;
     height: 20px;
 }
+</style>
+<style>
+.ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
+
 </style>

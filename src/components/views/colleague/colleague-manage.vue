@@ -14,12 +14,12 @@
                     <el-option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></el-option>
                 </el-select>
 
-                <!-- <span class="search-box-text">设备分类:</span>
-                <Select v-model="psortVal" style="width:200px">
-                    <Option v-for="item in videoSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
-                </Select>--> 
+                <span class="search-box-text">学院分类:</span>
+                <el-select clearable v-model="psortVal" style="width:200px">
+                    <el-option v-for="item in colleagueSortList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select> 
                 <!-- <span class="search-box-text">模糊查询:</span> -->
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="学院名称关键字"
                     clearable
@@ -36,6 +36,14 @@
             <template slot-scope="{row}" slot="updateTime">
                 <font v-if="row.updateTime==null || row.updateTime=='' || row.updateTime==undefined">-</font>
                 <font v-else>{{row.updateTime}}</font>
+            </template>
+            
+             <template slot-scope="{row}" slot="buildName">
+                <font>[{{row.buildId}}]{{row.buildName}}</font>
+            </template>
+            
+            <template slot-scope="{row}" slot="collegeTypeName">
+                <font>[{{row.collegeTypeId}}]{{row.collegeTypeName}}</font>
             </template>
 
             <!-- 给表格中的某一列添加超链接 -->
@@ -58,12 +66,7 @@
 
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
-                <font v-if="row.state==0">
-                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
-                </font>
-                <font v-else-if="row.state==1">
-                    <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
-                </font>
+                <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button>
             </template>
 
         </Table>
@@ -82,7 +85,7 @@
         <el-dialog  title="新增学院信息" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules = 'rules'      class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
-                    <el-select v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                    <el-select @change="changeCompus" v-model="form.campusId" style="width:300px;margin-bottom:5px">
                         <el-option
                             v-for="item in campusList"
                             :key="item.id"
@@ -99,9 +102,27 @@
                     ></el-input>
                 </el-form-item>
 
+                <el-form-item label="所属建筑:" prop="buildId">
+                    <el-select  v-model="form.buildId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in bulidingList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.name"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="学院类型:" prop="collegeTypeId">
+                    <el-select clearable v-model="form.collegeTypeId" 
+                     style="width:300px;margin-bottom:5px">
+                        <el-option v-for="item in colleagueSortList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item label="学院描述:" >
                     <el-input
-                        v-model="form.descripe"
+                        v-model="form.describe"
                         placeholder="学院描述"
                         style="width:300px;margin-bottom:5px"
                         clearable
@@ -126,6 +147,15 @@
                     ></el-input>
                 </el-form-item>
 
+                <!-- <el-form-item label="学院数据:">
+                    <el-input
+                        v-model="form.data"
+                        placeholder="学院数据"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item> -->
+
                 <el-form-item label="图片:" >
                     <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
                 </el-form-item>
@@ -140,7 +170,7 @@
 
         <!-- 修改数据 -->
         <el-dialog  title="修改学院信息" :visible.sync="updateVisible" width="480px">
-            <el-form :model="form" ref="form" label-width="115px" class="demo-ruleForm">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules" class="demo-ruleForm">
                 <el-form-item label="校区名称:" >
                     <el-select disabled v-model="form.campusId" style="width:300px;margin-bottom:5px">
                         <el-option
@@ -162,9 +192,27 @@
                     ></el-input>
                 </el-form-item>
 
+                <el-form-item label="学院类型:" prop="collegeTypeId">
+                    <el-select clearable v-model="form.collegeTypeId" 
+                     style="width:300px;margin-bottom:5px">
+                        <el-option v-for="item in colleagueSortList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="所属建筑:" prop="buildId">
+                    <el-select  v-model="form.buildId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in bulidingList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.name"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item label="学院描述:" >
                     <el-input
-                        v-model="form.descripe"
+                        v-model="form.describe"
                         placeholder="学院描述"
                         style="width:300px;margin-bottom:5px"
                         clearable
@@ -188,6 +236,15 @@
                         clearable
                     ></el-input>
                 </el-form-item>
+
+                <!-- <el-form-item label="学院数据:">
+                    <el-input
+                        v-model="form.data"
+                        placeholder="学院数据"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item> -->
                 
                 <el-form-item label="图片:" >
                     <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
@@ -207,6 +264,7 @@ export default {
     name:'colleague-manage',
     data() {
         return {
+            bulidingList: [],
             fileList:[],
             search:'',
             campus:'',
@@ -225,7 +283,19 @@ export default {
                     title:'学院名称',
                     key: 'collegeName',
                     //  minWidth:'90px',
-                    minWidth:230,
+                    minWidth:160,
+                    align:'center'
+                },{
+                    title:'学院类型',
+                    slot: 'collegeTypeName',
+                    //  minWidth:'90px',
+                    minWidth:160,
+                    align:'center'
+                },{
+                    title:'所属建筑',
+                    slot: 'buildName',
+                    //  minWidth:'90px',
+                    minWidth:160,
                     align:'center'
                 },{
                     title:'学院描述',
@@ -252,9 +322,9 @@ export default {
                 },
                 {
                     title:'学院链接',
-                    slot: 'webUrl',
+                    key: 'webUrl',
                     tooltip:'true',
-                    minWidth: 90,
+                    minWidth: 130,
                     align:'center',
                 },{
                     title:'修改时间',
@@ -282,25 +352,87 @@ export default {
             form:{
                 campusId:'',
                 collegeName:'',
-                descripe:'',
+                describe:'',
                 shortDes:'',
                 webUrl:'',//学院连接
                 file:'',//图片上传
-                videoUrl:''
+                videoUrl:'',
+                collegeTypeId: '',
+                buildId: ''
             },
             addVisible: false,
             rules:{
                 collegeName: [
                     { required: true, message: '学院名称不能为空', trigger: 'blur' }
+                ],
+                collegeTypeId: [
+                    { required: true, message: '学院类型不能为空', trigger: 'blur' }
+                ],
+                buildId: [
+                    { required: true, message: '所属建筑不能为空', trigger: 'blur' }
                 ]
             },
-            deleteFlag: false
+            deleteFlag: false,
+            colleagueSortList: [],
+            psortVal: ''
         }
     },
     created() {
         this.getCampusList();
+        this.getColleagueSortList();
     },
     methods: {
+        changeCompus() {
+            this.bulidingList = [];
+            axios({
+                url:this.$store.state.UrlIP+'/building/getData',
+                method:'get',
+                params:{
+                    campusId:this.form.campusId,
+                    pageIndex: '1',
+                    pageSize:'100',
+                    token: window.localStorage.getItem('Authorization')
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res => {
+                if (res.data.code === 0) {
+                    res.data.data.forEach(item => {
+                        this.bulidingList.push({
+                            id: item.buildId,
+                            name: item.buildName
+                        })
+                    })
+                }
+            })
+        },
+        getColleagueSortList() {
+            axios({
+                url: this.$store.state.UrlIP + '/college/getTypeData',
+                method: 'get',
+                params: {
+                    pageIndex: '1',
+                    pageSize: '100',
+                    token: window.localStorage.getItem('Authorization')
+                },
+                headers:{
+                    'Content-type':'application/x-www-form-urlencoded'
+                }
+            }).then(res => {
+                if (res.data.code === 0) {
+                    res.data.data.forEach(item => {
+                        console.log(item);
+                        this.colleagueSortList.push({
+                            id: item.collegeTypeId,
+                            name: item.collegeTypeName
+                        })
+                    })
+                }
+            }).catch(err => {
+                console.log(err);
+            })
+        },
         changeImage(e) {
             var file = e.target.files[0];
             var reader = new FileReader()
@@ -316,11 +448,13 @@ export default {
             this.form = {
                 campusId:'',
                 collegeName:'',
-                descripe:'',
+                describe:'',
                 shortDes:'',
                 webUrl:'',//学院连接
                 file:'',//图片上传
-                videoUrl:''
+                videoUrl:'',
+                collegeTypeId: '',
+                buildId: ''
             };
         },
         
@@ -334,6 +468,10 @@ export default {
                     formData.append('webUrl', this.form.webUrl);
                     formData.append('file',this.$refs.fileType.files[0]);
                     formData.append('token', window.localStorage.getItem('Authorization'));
+                    formData.append('describe', this.form.describe);
+                    // formData.append('data', this.form.data);
+                    formData.append('collegeTypeId', this.form.collegeTypeId);
+                    formData.append('buildId', this.form.buildId);
                     axios({
                         url: this.$store.state.UrlIP + '/college/insertData',
                         method: "post",
@@ -367,11 +505,14 @@ export default {
             this.form={
                 campusId:this.msg.campusId,
                 collegeName:this.msg.collegeName,
-                descripe:this.msg.describe,
+                describe:this.msg.describe,
                 shortDes:this.msg.shortDes,
                 webUrl:this.msg.webUrl,//学院连接
-                file:this.msg.picUrl,//图片上传
-            }
+                file:this.msg.picUrl,//图片上传,
+                collegeTypeId: this.msg.collegeTypeId,
+                buildId: this.msg.buildId
+            };
+             this.changeCompus();
         },
 
         /**
@@ -383,11 +524,15 @@ export default {
                     let formData = new FormData();
                     formData.append('collegeId', this.msg.collegeId);
                     formData.append('campusId', this.form.campusId);
-                    formData.append('collegeName', this.form.collegeName);
+                    // formData.append('collegeName', this.form.collegeName);
                     formData.append('shortDes', this.form.shortDes);
                     formData.append('webUrl', this.form.webUrl);
                     formData.append('file',this.$refs.fileType.files[0]);
                     formData.append('token', window.localStorage.getItem('Authorization'));
+                    formData.append('describe', this.form.describe);
+                    formData.append('collegeTypeId', this.form.collegeTypeId);
+                    formData.append('buildId', this.form.buildId);
+                    // formData.append('data', this.form.data);
                     axios({
                         url: this.$store.state.UrlIP + '/college/updateData',
                         method: "post",
@@ -429,6 +574,7 @@ export default {
         clickSub(){
             this.getColleagueList();
         },
+
         //获得校区的数据列表
         getCampusList(){
             axios({
@@ -436,7 +582,8 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'100'
+                    pageSize:'100',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -467,7 +614,9 @@ export default {
                     campusId:this.campus,
                     pageSize:this.pageSize,
                     pageIndex:this.currentPage,
-                    key:this.search
+                    key:this.search,
+                    token: window.localStorage.getItem('Authorization'),
+                    collegeTypeId: this.psortVal
                 },
                 headers:{
                     'Content-type':'application-x-www-urlencoded'
@@ -476,6 +625,7 @@ export default {
                 if (res.data.code==0) {
                     this.collegeList=res.data.data;
                     this.collegeList.forEach(item => {
+                        console.log(item);
                         item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
                     })
                     this.totalCount=res.data.respPage.totalCount
@@ -505,7 +655,7 @@ export default {
                 method: 'post',
                 params: {
                     collegeId: collegeId,
-                    token: '886a',
+                    token: window.localStorage.getItem('Authorization'),
                     state: '1'
                 },
                 headers:{
@@ -544,4 +694,24 @@ a{
     width: 20px;
     height: 20px;
 }
+
+</style>
+<style>
+.ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
+
 </style>

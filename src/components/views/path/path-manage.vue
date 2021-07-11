@@ -8,15 +8,15 @@
         <div class='searchInput'>
             <div class="search-top">
                 <span class="search-box-text">校区:</span>
-                <Select v-model="campus" style="width:200px" clearable>
-                    <Option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></Option>
-                </Select>
+                <el-select v-model="campus" style="width:200px" clearable>
+                    <el-option v-for="item in campusList" :key="item.id" :label="item.campusName" :value="item.id"></el-option>
+                </el-select>
                 <!-- <span class="search-box-text">公共服务分类:</span>
                 <Select v-model="psortVal" style="width:200px">
                     <Option v-for="item in pathSortList" :key="item.id" :label="item.name" :value="item.id"></Option>
                 </Select> -->
                 <span class="search-box-text">模糊查询:</span>
-                <Input style="width:auto" 
+                <Input style="width:260px" 
                     v-model="search"
                     placeholder="路径名称关键字"
                     clearable
@@ -49,12 +49,7 @@
 
             <template slot-scope="{row,index}" slot="action">
                 <Button type="info" size='small' style="marginRight:5px" @click="updateInfo(row,index)">修改</Button>
-                <font v-if="row.state==0">
-                    <Button type="warning" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">停用</Button>
-                </font>
-                <font v-else-if="row.state==1">
-                    <Button type="success" size='small' style="marginRight:5px" @click="startInfo(row,index)">启用</Button>
-                </font>
+                <Button type="error" size='small' style="marginRight:5px" @click="deleteInfo(row,index)">删除</Button>
             </template>
         </Table>
 
@@ -93,7 +88,7 @@
                     ></el-input>
                 </el-form-item>
                 
-                <el-form-item label="路径信息:" prop="pathMsg">
+                <el-form-item label="路径信息:">
                     <el-input
                         v-model="form.pathMsg"
                         placeholder="路径信息"
@@ -101,8 +96,6 @@
                         clearable
                     ></el-input>
                 </el-form-item>
-                
-
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button class="tableBtn" @click="addVisible = false">取 消</el-button>
@@ -110,6 +103,43 @@
             </span>
         </el-dialog>
 
+        <!-- 修改路径 -->
+        <el-dialog  title="修改路径信息" :visible.sync="updateVisible" width="480px">
+            <el-form :model="form" ref="form" label-width="115px" :rules="rules2" class="demo-ruleForm">
+                <el-form-item label="校区名称:" prop="campusId">
+                    <el-select disabled v-model="form.campusId" style="width:300px;margin-bottom:5px">
+                        <el-option
+                            v-for="item in campusList"
+                            :key="item.id"
+                            :label="'['+item.id+']'+item.campusName"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="路径名称:" prop="pathName">
+                    <el-input
+                        v-model="form.pathName"
+                        placeholder="路径名称"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+                
+                <el-form-item label="路径信息:">
+                    <el-input
+                        v-model="form.pathMsg"
+                        placeholder="路径信息"
+                        style="width:300px;margin-bottom:5px"
+                        clearable
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="tableBtn" @click="updateVisible = false">取 消</el-button>
+                <el-button class="tableBtn" type="primary" @click="saveUpdate('form')">确定</el-button>
+            </span>
+        </el-dialog>
 
     </div>
 </template>
@@ -177,10 +207,10 @@ export default {
                 pathName:[
                     {required: true, message: '路径名称不能为空', trigger: 'blur'}
                 ],
-                pathMsg:[
-                    {required: true, message: '路径信息不能为空', trigger: 'blur'}
-                ]
-            }
+            },
+            updateVisible: false,
+            index: '',
+            msg: ''
         }
     },
     created() {
@@ -197,7 +227,8 @@ export default {
                 method:'get',
                 params:{
                     pageIndex:'1',
-                    pageSize:'10'
+                    pageSize:'10',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -230,7 +261,8 @@ export default {
                     pageSize:this.pageSize,
                     campusId:this.campus,
                     key:this.search,
-                    pathId:''
+                    pathId:'',
+                    token: window.localStorage.getItem('Authorization')
                 },
                 headers:{
                     'Content-type':'application/x-www-form-urlencoded'
@@ -259,12 +291,16 @@ export default {
         saveAdd(name){
             this.$refs[name].validate(valid=>{
                 if (valid) {
-                    axios({
-                        url:this.$store.state.UrlIP+'',
-                        method:'',
-                        params:{
+                    let formData = new FormData();
+                    formData.append('pathName', this.form.pathName);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('data', this.form.pathMsg);
+                    formData.append('token', window.localStorage.getItem('Authorization'));
 
-                        },
+                    axios({
+                        url:this.$store.state.UrlIP + '/path/insertData',
+                        method: 'post',
+                        data: formData,
                         headers:{
                             'Content-type':'application/x-www-form-urlencoded'
                         }
@@ -311,6 +347,76 @@ export default {
         },
 
 
+        // 修改路径信息
+        updateInfo(row, index) {
+            this.msg = row;
+            this.form = {
+                pathName: row.pathName,
+                campusId: row.campusId,
+                pathMsg: row.data,
+            }
+            this.updateVisible = true;
+        },
+
+        saveUpdate(name) {
+            this.$refs[name].validate(valid=>{
+                if (valid) {
+                    let formData = new FormData();
+                    formData.append('pathId', this.msg.pathId);
+                    formData.append('pathName', this.form.pathName);
+                    formData.append('campusId', this.form.campusId);
+                    formData.append('data', this.form.pathMsg);
+                    formData.append('token', window.localStorage.getItem('Authorization'));
+                    axios({
+                        url: this.$store.state.UrlIP + '/path/updateData',
+                        method: 'post',
+                        data: formData,
+                        headers:{
+                            'Content-type':'application/x-www-form-urlencoded'
+                        }
+                    }).then(res => {
+                        if (res.data.code==0) {
+                            this.$Message['success']({
+                                background: true,
+                                content:'操作成功！'
+                            })
+                            this.updateVisible=false;
+                            this.getPathList()
+                        }else{
+                            this.$message({
+                                dangerouslyUseHTMLString: true,
+                                message:
+                                    "<span style='font-size: 20px;margin-left: 20px'>错误代码" +
+                                    res.data.code +
+                                    " 错误信息：" +
+                                    res.data.msg +
+                                    "</span>",
+                                type: "error",
+                                customClass: "zZindex",
+                            });
+                        }
+                    }).catch(err=>{
+                        this.$message({
+                            dangerouslyUseHTMLString: true,
+                            message:
+                            "<span style='font-size: 20px;margin-left: 20px'>系统错误！</span>",
+                            type: "error",
+                            customClass: "zZindex",
+                        });
+                    })
+                } else {
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message:
+                        "<span style='font-size: 20px;margin-left: 20px'>请输入有效信息！</span>",
+                        type: "warning",
+                        customClass: "zZindex",
+                    });
+                }
+            })
+        },
+
+
         changePage(val){
             this.currentPage=val;
             this.getPathList();
@@ -320,6 +426,44 @@ export default {
             this.getPathList();
         },
 
+        // 删除操作
+        deleteInfo(row, index) {
+            console.log(row);
+            this.$Modal.confirm({
+                title: '注意',
+                content: '是否删除路径及其相关信息？',
+                onOk: () => {
+                    this.handleDelete(row.pathId);
+                },
+                onCancel: () => {
+                    this.$Message.info('取消删除');
+                }
+            });
+        },
+        handleDelete(pathId) {
+            this.$axios({
+                url: this.$store.state.UrlIP + '/path/updateData',
+                method: 'post',
+                params: {
+                    pathId,
+                    state: 1,
+                    token: window.localStorage.getItem('Authorization')
+                },
+                headers:{
+                    'Content-type':'multipart/form-data'
+                }
+            }).then(res => {
+                if(res.data.code == 0) {
+                    this.$Message['success']({
+                        background: true,
+                        content:'操作成功！'
+                    });
+                    this.getPathList();
+                }
+            }).catch(err => {
+                console.log(err);
+            })
+        }
     },
 }
 </script>
@@ -330,7 +474,6 @@ export default {
 }
 </style>
 <style>
-
 .el-message{
     height: 100px;
     width: 600px;
@@ -342,3 +485,20 @@ export default {
     font-size: 35px !important;
     font-weight: bold;
   }
+.ivu-input {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 14px;
+    border: 1px solid #dcdee2;
+    border-radius: 4px;
+    color: #515a6e;
+    background-color: #fff;
+    background-image: none;
+    position: relative;
+    cursor: text;
+    transition: border .2s ease-in-out,backgrou
+}
+</style>

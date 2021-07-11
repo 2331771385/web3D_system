@@ -76,7 +76,7 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'campus',
-                    title: '校区数据',
+                    title: '校区管理',
                     children:[
                         {
                             index:'campus-manage',
@@ -87,18 +87,22 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'colleague',
-                    title: '学院数据',
+                    title: '学院管理',
                     children:[
                         {
                             index:'colleague-manage',
                             title:'学院数据管理'
-                        }
+                        },
+                        {
+                            index:'colleague-sort',
+                            title:'学院类型管理'
+                        },
                     ]
                 },
                 {
                     icon: 'el-icon-news',
                     index: 'building',
-                    title: '建筑数据',
+                    title: '主要建筑管理',
                     children:[
                         {
                             index:'building-manage',
@@ -113,18 +117,22 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'public',
-                    title: '公共服务',
+                    title: '公共服务管理',
                     children:[
                         {
                             index:'public-manage',
                             title:'公共服务管理'
+                        },
+                        {
+                            index:'public-sort',
+                            title:'公共服务分类管理'
                         }
                     ]
                 },
                 {
                     icon: 'el-icon-news',
                     index: 'path',
-                    title: '路径数据',
+                    title: '路径管理',
                     children:[
                         {
                             index:'path-manage',
@@ -135,7 +143,7 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'video',
-                    title: '设备数据',
+                    title: '设备管理',
                     children:[
                         {
                             index:'video-manage',
