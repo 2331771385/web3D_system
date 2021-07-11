@@ -186,7 +186,7 @@
                     ></el-input>
                 </el-form-item>
 
-                <el-form-item label="公共服务类型:">
+                <el-form-item label="公共服务类型:" prop="serviceTypeId">
                     <el-select v-model="form.serviceTypeId" style="width:300px;margin-bottom:5px">
                         <el-option
                             v-for="item in publicSortList"
