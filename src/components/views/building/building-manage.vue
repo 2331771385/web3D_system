@@ -96,8 +96,7 @@
 
             </v-dialog>
         </template>
-        
-        
+            
          <el-dialog  title="添加建筑信" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules='ruleValidate' class="demo-ruleForm">
                 <el-form-item label="校区名称:" prop="campusId">
@@ -135,6 +134,16 @@
                      <el-input 
                         v-model="form.data" 
                         placeholder="建筑数据" 
+                        style="width:300px;margin-bottom:5px" 
+                        clearable
+                    >
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="建筑图标:" >
+                     <el-input 
+                        v-model="form.pinData" 
+                        placeholder="建筑图标" 
                         style="width:300px;margin-bottom:5px" 
                         clearable
                     >
@@ -271,7 +280,8 @@ export default {
                 buildId:'',
                 shortDes:'',
                 campusId:'',
-                buildTypeId:''
+                buildTypeId:'',
+                pinData: ''
             },
             ruleValidate:{
                 buildName: [
@@ -399,7 +409,8 @@ export default {
                 shortDes:'',    
                 buildId:'',
                 campusId:'',
-                buildTypeId:''
+                buildTypeId:'',
+                pinData: ''
             };
             this.addVisible=true;
         },
@@ -421,6 +432,7 @@ export default {
         updateInfo(row,index){
             this.msg=row;
             this.index=index;
+            console.log(row);
             this.form={
                 data: this.msg.data,
                 des:this.msg.describe,
@@ -430,7 +442,8 @@ export default {
                 buildType:this.msg.buildTypeName,
                 shortDes:this.msg.shortDes,
                 campusId:this.msg.campusId,
-                buildTypeId:this.msg.buildTypeId
+                buildTypeId:this.msg.buildTypeId,
+                pinData: this.msg.pinData
             };
             this.updVisible=true;
             this.updBuilding=true;
@@ -477,6 +490,7 @@ export default {
                     formData.append('data',this.form.data);
                     formData.append('describe',this.form.des);
                     formData.append('shortDes',this.form.shortDes);
+                    formData.append('pinData', this.form.pinData);
                     formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
                         url: this.$store.state.UrlIP+'/building/insertData',
@@ -507,7 +521,6 @@ export default {
         },
 
         updSuccess(data){
-            console.log(data);
             axios({
                 url: this.$store.state.UrlIP+'/building/updateData',
                 method: 'post',

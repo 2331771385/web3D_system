@@ -376,6 +376,13 @@ export default {
                         content:'操作成功！'
                     });
                     this.getPublicSortList();
+                } else {
+                    this.$message({
+                        dangerouslyUseHTMLString: true,
+                        message: "<span style='font-size: 20px;margin-left: 20px'>错误代码"+ res.data.code+ " 错误信息：" + res.data.msg+"</span>",
+                        type: "error",
+                        customClass:'zZindex',
+                    });
                 }
             }).catch(err => {
                 console.log(err);
@@ -445,4 +452,15 @@ export default {
     cursor: text;
     transition: border .2s ease-in-out,backgrou
 }
+.el-message{
+    height: 100px;
+    width: 600px;
+    font-size: 35px !important;
+    font-weight: bold;
+  }
+  .zZindex {
+    z-index:3000 !important;
+    font-size: 35px !important;
+    font-weight: bold;
+  }
 </style>

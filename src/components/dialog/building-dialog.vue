@@ -34,6 +34,9 @@
                     <FormItem label='建筑数据:'>
                         <Input v-model="tempUpdBuilding.data" clearable />
                     </FormItem>
+                    <FormItem label='建筑图标:'>
+                        <Input v-model="tempUpdBuilding.pinData" clearable />
+                    </FormItem>
                     
                     <FormItem label='图片:'>
                          <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
@@ -104,6 +107,7 @@ export default {
                 formData.append("token", window.localStorage.getItem('Authorization'));
                 formData.append("file", this.$refs.fileType.files[0]);
                 formData.append("data", this.tempUpdBuilding.data);
+                formData.append('pinData', this.tempUpdBuilding.pinData);
                 this.$emit('updSuccess', formData)
             })
         },
