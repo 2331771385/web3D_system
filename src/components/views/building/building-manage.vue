@@ -97,7 +97,7 @@
             </v-dialog>
         </template>
             
-         <el-dialog  title="添加建筑信" :visible.sync="addVisible" width="480px">
+         <el-dialog  title="添加建筑信息" :visible.sync="addVisible" width="480px">
             <el-form :model="form" ref="form" label-width="115px" :rules='ruleValidate' class="demo-ruleForm">
                 <el-form-item label="校区名称:" prop="campusId">
                     <el-select  v-model="form.campusId" style="width:300px;margin-bottom:5px">
@@ -521,6 +521,7 @@ export default {
         },
 
         updSuccess(data){
+            console.log(data);
             axios({
                 url: this.$store.state.UrlIP+'/building/updateData',
                 method: 'post',
