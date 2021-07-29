@@ -37,6 +37,10 @@
                     <FormItem label='建筑图标:'>
                         <Input v-model="tempUpdBuilding.pinData" clearable />
                     </FormItem>
+
+                    <FormItem label='建筑视角:'>
+                        <Input v-model="tempUpdBuilding.cameraView" clearable />
+                    </FormItem>
                     
                     <FormItem label='图片:'>
                          <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
@@ -98,6 +102,9 @@ export default {
         updSuccess(){
             this.$refs['formUpdValid'].validate((valid)=>{
                 let formData = new FormData();
+                if (this.tempUpdBuilding.pinData === null) {
+                    this.tempUpdBuilding.pinDat = '';
+                }
                 formData.append("buildTypeId", this.tempUpdBuilding.buildTypeId);
                 formData.append("campusId", this.tempUpdBuilding.campusId);
                 formData.append("buildName", this.tempUpdBuilding.buildName);
@@ -108,6 +115,7 @@ export default {
                 formData.append("file", this.$refs.fileType.files[0]);
                 formData.append("data", this.tempUpdBuilding.data);
                 formData.append('pinData', this.tempUpdBuilding.pinData);
+                formData.append('cameraView', this.tempUpdBuilding.cameraView);
                 this.$emit('updSuccess', formData)
             })
         },

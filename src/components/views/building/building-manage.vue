@@ -150,6 +150,16 @@
                     </el-input>
                 </el-form-item>
 
+                <el-form-item label="建筑视角:" >
+                     <el-input 
+                        v-model="form.cameraView" 
+                        placeholder="建筑视角" 
+                        style="width:300px;margin-bottom:5px" 
+                        clearable
+                    >
+                    </el-input>
+                </el-form-item>
+
                 <!-- 图片 -->
                 <el-form-item label="图片:" >
                     <input type="file" name="avatar" ref="fileType" @change="changeImage($event)"/>
@@ -281,7 +291,8 @@ export default {
                 shortDes:'',
                 campusId:'',
                 buildTypeId:'',
-                pinData: ''
+                pinData: '',
+                cameraView
             },
             ruleValidate:{
                 buildName: [
@@ -410,7 +421,8 @@ export default {
                 buildId:'',
                 campusId:'',
                 buildTypeId:'',
-                pinData: ''
+                pinData: '',
+                cameraView: ''
             };
             this.addVisible=true;
         },
@@ -432,7 +444,6 @@ export default {
         updateInfo(row,index){
             this.msg=row;
             this.index=index;
-            console.log(row);
             this.form={
                 data: this.msg.data,
                 des:this.msg.describe,
@@ -443,7 +454,8 @@ export default {
                 shortDes:this.msg.shortDes,
                 campusId:this.msg.campusId,
                 buildTypeId:this.msg.buildTypeId,
-                pinData: this.msg.pinData
+                pinData: this.msg.pinData,
+                cameraView: this.msg.cameraView
             };
             this.updVisible=true;
             this.updBuilding=true;
@@ -491,6 +503,7 @@ export default {
                     formData.append('describe',this.form.des);
                     formData.append('shortDes',this.form.shortDes);
                     formData.append('pinData', this.form.pinData);
+                    formData.append('cameraView', this.form.cameraView);
                     formData.append('token', window.localStorage.getItem('Authorization'));
                     axios({
                         url: this.$store.state.UrlIP+'/building/insertData',
