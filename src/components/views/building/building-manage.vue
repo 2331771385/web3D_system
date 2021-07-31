@@ -292,7 +292,7 @@ export default {
                 campusId:'',
                 buildTypeId:'',
                 pinData: '',
-                cameraView
+                cameraView: ''
             },
             ruleValidate:{
                 buildName: [
