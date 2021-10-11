@@ -177,7 +177,7 @@ export default {
                             typeName:item.buildTypeName,
                             createTime:item.createTime,
                             updateTime:item.updateTime,
-                            picture: `http://211.87.231.41:8089${item.iconUrl}`,
+                            picture: `http://202.194.14.204:8082${item.iconUrl}`,
                             sortIndex: item.sortIndex
                         })
                     })

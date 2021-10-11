@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from "../store";
-import iView from 'iview';
 
 Vue.use(Router)
 const whiteList = [
@@ -16,7 +15,7 @@ const freeRoute = [
     path: '/login',
     // component: resolve => require(['../components/views/account/login.vue'], resolve)
     component: () => import("../components/views/account/login.vue")
-    
+
   },
   {
     path: '/home',
@@ -24,125 +23,153 @@ const freeRoute = [
     component: resolve => require(['../components/common/home.vue'], resolve),
     children: [
       {
-        path:'/headIndex',
-        name:"headIndex",
-        component:resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
+        path: '/headIndex',
+        name: "headIndex",
+        component: resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
         meta: {
           title: '首页',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/campus-manage',
-        name:"campus-manage",
-        component:resolve => require(['../components/views/campus/campus-manage.vue'], resolve),
+        path: '/campus-manage',
+        name: "campus-manage",
+        component: resolve => require(['../components/views/campus/campus-manage.vue'], resolve),
         meta: {
           title: '校区数据管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/colleague-manage',
-        name:"colleague-manage",
-        component:resolve => require(['../components/views/colleague/colleague-manage.vue'], resolve),
+        path: '/colleague-manage',
+        name: "colleague-manage",
+        component: resolve => require(['../components/views/colleague/colleague-manage.vue'], resolve),
         meta: {
           title: '学院数据管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/colleague-sort',
-        name:"colleague-sort",
-        component:resolve => require(['../components/views/colleague/colleague-sort.vue'], resolve),
+        path: '/colleague-sort',
+        name: "colleague-sort",
+        component: resolve => require(['../components/views/colleague/colleague-sort.vue'], resolve),
         meta: {
           title: '学院类型管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/building-manage',
-        name:"building-manage",
-        component:resolve => require(['../components/views/building/building-manage.vue'], resolve),
+        path: '/building-manage',
+        name: "building-manage",
+        component: resolve => require(['../components/views/building/building-manage.vue'], resolve),
         meta: {
           title: '建筑数据管理',
           // icon:'el-icon-setting'
         }
-      },{
-        path:'/building-sort',
-        name:"building-sort",
-        component:resolve => require(['../components/views/building/building-sort.vue'], resolve),
+      }, {
+        path: '/building-sort',
+        name: "building-sort",
+        component: resolve => require(['../components/views/building/building-sort.vue'], resolve),
         meta: {
           title: '建筑分类管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/public-manage',
-        name:"public-manage",
-        component:resolve => require(['../components/views/public/public-manage.vue'], resolve),
+        path: '/public-manage',
+        name: "public-manage",
+        component: resolve => require(['../components/views/public/public-manage.vue'], resolve),
         meta: {
           title: '公共服务数据管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/public-sort',
-        name:"public-sort",
-        component:resolve => require(['../components/views/public/public-sort.vue'], resolve),
+        path: '/public-sort',
+        name: "public-sort",
+        component: resolve => require(['../components/views/public/public-sort.vue'], resolve),
         meta: {
           title: '公共服务分类管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/path-manage',
-        name:"path-manage",
-        component:resolve => require(['../components/views/path/path-manage.vue'], resolve),
+        path: '/path-manage',
+        name: "path-manage",
+        component: resolve => require(['../components/views/path/path-manage.vue'], resolve),
         meta: {
           title: '路径数据管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/video-manage',
-        name:"video-manage",
-        component:resolve => require(['../components/views/video/video-manage.vue'], resolve),
+        path: '/path-manage',
+        name: "path-manage",
+        component: resolve => require(['../components/views/path/path-manage.vue'], resolve),
+        meta: {
+          title: '访问数据管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path: '/video-manage',
+        name: "video-manage",
+        component: resolve => require(['../components/views/video/video-manage.vue'], resolve),
         meta: {
           title: '监控设备数据管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/role',
-        name:"role",
-        component:resolve => require(['../components/views/system/role.vue'], resolve),
+        path: '/role',
+        name: "role",
+        component: resolve => require(['../components/views/system/role.vue'], resolve),
         meta: {
           title: '角色管理',
           // icon:'el-icon-setting'
         }
       },
       {
-        path:'/admin',
-        name:"admin",
-        component:resolve => require(['../components/views/system/admin.vue'], resolve),
+        path: '/admin',
+        name: "admin",
+        component: resolve => require(['../components/views/system/admin.vue'], resolve),
         meta: {
           title: '管理员设置',
           // icon:'el-icon-setting'
         }
-      },{
-        path:'/logMessage',
-        name:"logMessage",
-        component:resolve => require(['../components/views/system/logMessage.vue'], resolve),
+      }, {
+        path: '/logMessage',
+        name: "logMessage",
+        component: resolve => require(['../components/views/system/logMessage.vue'], resolve),
         meta: {
           title: '日志管理',
           // icon:'el-icon-setting'
         }
-      },{
-        path:'/loginHistory',
-        name:"loginHistory",
-        component:resolve => require(['../components/views/system/loginHistory.vue'], resolve),
+      }, {
+        path: '/loginHistory',
+        name: "loginHistory",
+        component: resolve => require(['../components/views/system/loginHistory.vue'], resolve),
         meta: {
           title: '登录历史',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path: '/statistics',
+        name: "statistics",
+        component: resolve => require(['../components/views/statistics/index.vue'], resolve),
+        meta: {
+          title: '访问统计',
+          // icon:'el-icon-setting'
+        }
+      },
+      // dailyVisit
+      {
+        path: '/dailyVisit',
+        name: "dailyVisit",
+        component: resolve => require(['../components/views/statistics/statistics-dailyVisit.vue'], resolve),
+        meta: {
+          title: '日访问量',
           // icon:'el-icon-setting'
         }
       },

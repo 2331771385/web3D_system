@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
-        UrlIP: "http://211.87.231.41:8089",//接口地址前缀
+        UrlIP: "http://202.194.14.204:8082",//接口地址前缀
 
         Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : '',  // 存储token
         UserName: localStorage.getItem('UserName') ? localStorage.getItem('UserName') : '',                      // 用户名

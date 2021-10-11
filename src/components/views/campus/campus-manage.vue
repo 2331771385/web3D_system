@@ -326,7 +326,7 @@ export default {
                     this.campusList=res.data.data;
                     this.campusList.forEach(item => {
                         console.log(item);
-                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`
+                        item.picUrl = `http://202.194.14.204:8082${item.picUrl}`
                     })
                     this.totalCount=res.data.respPage.totalCount
                 }

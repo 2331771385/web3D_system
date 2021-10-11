@@ -381,7 +381,7 @@ export default {
                     console.log(res.data.data);
                     this.dataList=res.data.data;
                     this.dataList.forEach(item => {
-                        item.picUrl = `http://211.87.231.41:8089${item.picUrl}`;
+                        item.picUrl = `http://202.194.14.204:8082${item.picUrl}`;
                     })
                     this.totalCount=res.data.respPage.totalCount
                     res.data.data.forEach(item => {
