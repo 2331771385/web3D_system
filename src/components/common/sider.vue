@@ -132,7 +132,7 @@ export default {
                 {
                     icon: 'el-icon-news',
                     index: 'path',
-                    title: '路径管理',
+                    title: '虚拟漫游管理',
                     children:[
                         {
                             index:'path-manage',
