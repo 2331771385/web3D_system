@@ -486,7 +486,7 @@ export default {
             window.localStorage.getItem("Authorization")
           );
           axios({
-            url: this.$store.state.UrlIP + "/path/updateData",
+            url: this.$store.state.UrlIP + "/vr/path/updateData",
             method: "post",
             data: formData,
             headers: {
@@ -561,7 +561,7 @@ export default {
     },
     handleDelete(pathId) {
       this.$axios({
-        url: this.$store.state.UrlIP + "/path/updateData",
+        url: this.$store.state.UrlIP + "/vr/path/updateData",
         method: "post",
         params: {
           pathId,
