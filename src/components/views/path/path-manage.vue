@@ -96,7 +96,7 @@
     </template>
 
     <!-- 新增路径信息 -->
-    <el-dialog title="添加路径信息" :visible.sync="addVisible" width="480px">
+    <el-dialog title="添加路径信息" :visible.sync="addVisible" width="800px">
       <el-form
         :model="form"
         ref="form"
@@ -147,7 +147,7 @@
     </el-dialog>
 
     <!-- 修改路径 -->
-    <el-dialog title="修改路径信息" :visible.sync="updateVisible" width="480px">
+    <el-dialog title="修改路径信息" :visible.sync="updateVisible">
       <el-form
         :model="form"
         ref="form"
@@ -155,46 +155,104 @@
         :rules="rules2"
         class="demo-ruleForm"
       >
-        <el-form-item label="校区名称:" prop="campusId">
-          <el-select
-            disabled
-            v-model="form.campusId"
-            style="width: 300px; margin-bottom: 5px"
-          >
-            <el-option
-              v-for="item in campusList"
-              :key="item.id"
-              :label="'[' + item.id + ']' + item.campusName"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="路径名称:" prop="pathName">
-          <el-input
-            v-model="form.pathName"
-            placeholder="路径名称"
-            style="width: 300px; margin-bottom: 5px"
-            clearable
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="路径信息:">
-          <el-input
-            v-model="form.pathMsg"
-            placeholder="路径信息"
-            style="width: 300px; margin-bottom: 5px"
-            clearable
-          ></el-input>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item label="校区名称:" prop="campusId">
+              <el-select
+                disabled
+                v-model="form.campusId"
+                style="width: 250px; margin-bottom: 5px"
+              >
+                <el-option
+                  v-for="item in campusList"
+                  :key="item.id"
+                  :label="'[' + item.id + ']' + item.campusName"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="路径名称:" prop="pathName">
+              <el-input
+                v-model="form.pathName"
+                placeholder="路径名称"
+                style="width: 250px; margin-bottom: 5px"
+                clearable
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="路径信息:">
+              <el-input
+                v-model="form.pathMsg"
+                placeholder="路径信息"
+                style="width: 250px; margin-bottom: 5px"
+                clearable
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
+      <!-- 列表数据 -->
+      <Table border :columns="updateColumns" :data="pathNodesArr">
+        <template slot-scope="{ row }" slot="createTime">
+          <font v-if="row.createTime == null || row.createTime == undefined"
+            >-</font
+          >
+          <font v-else>{{ row.createTime }}</font>
+        </template>
+
+        <template slot-scope="{ row }" slot="updateTime">
+          <font v-if="row.updateTime == null || row.updateTime == undefined">{{
+            row.createTime
+          }}</font>
+          <font v-else>{{ row.updateTime }}</font>
+        </template>
+        <template slot-scope="{ row, index }" slot="action">
+          <Button
+            type="error"
+            size="small"
+            style="marginright: 5px"
+            @click="deleteNode(row, index)"
+            >删除</Button
+          >
+        </template>
+      </Table>
       <span slot="footer" class="dialog-footer">
-        <el-button class="tableBtn" @click="updateVisible = false"
-          >取 消</el-button
+        <el-button class="tableBtn" type="success" @click="addNodes()"
+          >添加节点</el-button
         >
         <el-button class="tableBtn" type="primary" @click="saveUpdate('form')"
           >确定</el-button
         >
+        <el-button class="tableBtn" @click="updateVisible = false"
+          >取消</el-button
+        >
+      </span>
+    </el-dialog>
+
+    <!-- :before-close="handleClose" -->
+    <el-dialog title="添加节点" :visible.sync="addNodeShow" width="400px">
+      <template>
+        <el-select
+          style="width: 300px"
+          v-model="nodeSearchKey"
+          filterable
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="item in pathNodeList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
+      </template>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="insertNode()">确定</el-button>
+        <el-button @click="addNodeShow = false">取消</el-button>
       </span>
     </el-dialog>
 
@@ -206,9 +264,7 @@
       <span>{{ campusUrl }}</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="openCesiumLabShow = false">取 消</el-button>
-        <el-button type="primary" @click="handleOpen"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="handleOpen">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -233,6 +289,12 @@ export default {
           key: "pathName",
           //  minWidth:'90px',
           width: "150px",
+          align: "center",
+        },
+        {
+          title: "途经节点",
+          key: "pathNodesStr",
+          minWidth: 200,
           align: "center",
         },
         {
@@ -263,6 +325,52 @@ export default {
           align: "center",
         },
       ],
+      updateColumns: [
+        {
+          title: "id",
+          key: "id",
+          //  minWidth: 90,
+          width: "60px",
+          align: "center",
+        },
+        {
+          title: "节点名称",
+          key: "name",
+          //  minWidth: 90,
+          width: "120px",
+          align: "center",
+        },
+        {
+          title: "创建时间",
+          key: "createTime",
+          //  minWidth: 90,
+          width: "170px",
+          align: "center",
+        },
+        {
+          title: "修改时间",
+          key: "updateTime",
+          //  minWidth: 90,
+          width: "180px",
+          align: "center",
+        },
+        {
+          title: "节点信息",
+          key: "data",
+          minWidth: 90,
+          // width: "200px",
+          align: "center",
+          ellipsis: true,
+        },
+        {
+          title: "操作",
+          width: "90px",
+          slot: "action",
+          align: "center",
+        },
+      ],
+      pathNodesArr: [],
+      updatePathId: "",
       currentPage: "1",
       pageSize: "10",
       totalCount: 0,
@@ -287,7 +395,10 @@ export default {
       updateVisible: false,
       index: "",
       msg: "",
-      openCesiumLabShow: false
+      openCesiumLabShow: false,
+      addNodeShow: false,
+      pathNodeList: [],
+      nodeSearchKey: "",
     };
   },
   created() {
@@ -332,15 +443,110 @@ export default {
      * 获取路径信息
      */
     getPathList() {
+      return new Promise((resolve, reject) => {
+        axios({
+          url: this.$store.state.UrlIP + "/vr/path/getData",
+          method: "get",
+          params: {
+            pageIndex: this.currentPage,
+            pageSize: this.pageSize,
+            campusId: this.campus,
+            key: this.search,
+            pathId: "",
+            token: window.localStorage.getItem("Authorization"),
+          },
+          headers: {
+            "Content-type": "application/x-www-form-urlencoded",
+          },
+        })
+          .then((res) => {
+            if (res.data.code == 0) {
+              this.dataList = res.data.data;
+              for (let data of this.dataList) {
+                if (data.pathNodes.length == 0) {
+                  data.pathNodesStr = "-";
+                  continue;
+                }
+                let pathNodes = [];
+                for (let node of data.pathNodes) {
+                  pathNodes.push(node.name);
+                }
+                data.pathNodesStr = pathNodes.join(",");
+              }
+              this.totalCount = res.data.respPage.totalCount;
+              resolve();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            reject(err);
+          });
+      });
+    },
+
+    /**
+     * 新增路径节点
+     */
+    addNodes() {
+      this.addNodeShow = true;
+      // 获取节点列表
+      this.getBuildingList();
+    },
+
+    /**
+     * 获取节点列表
+     */
+    getBuildingList() {
+      this.pathNodeList = [];
       axios({
-        url: this.$store.state.UrlIP + "/vr/path/getData",
+        url: this.$store.state.UrlIP + "/building/getData",
         method: "get",
         params: {
-          pageIndex: this.currentPage,
-          pageSize: this.pageSize,
           campusId: this.campus,
-          key: this.search,
-          pathId: "",
+          token: window.localStorage.getItem("Authorization"),
+        },
+        headers: {
+          "Content-type": "application/x-www-form-urlencoded",
+        },
+      })
+        .then((res) => {
+          for (let data of res.data.data) {
+            this.pathNodeList.push({
+              id: data.buildId,
+              name: data.buildName,
+            });
+          }
+          this.addNodeShow = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    /**
+     * 刷新路径列表及节点列表
+     */
+    async refreshTable() {
+      await this.getPathList(); // 保证同步
+
+      // 重新请求修改dialog中的table数据
+      this.dataList.forEach((ele) => {
+        if (ele.pathId == this.updatePathId) {
+          this.pathNodesArr = ele.pathNodes;
+        }
+      });
+    },
+
+    /**
+     * 保存新增节点
+     */
+    insertNode() {
+      axios({
+        url: this.$store.state.UrlIP + "/vr/pathNode/insert",
+        method: "post",
+        params: {
+          pathID: this.msg.pathId,
+          objId: this.nodeSearchKey,
+          typeId: 1,
           token: window.localStorage.getItem("Authorization"),
         },
         headers: {
@@ -349,9 +555,15 @@ export default {
       })
         .then((res) => {
           if (res.data.code == 0) {
-            console.log(res.data.data);
-            this.dataList = res.data.data;
-            this.totalCount = res.data.respPage.totalCount;
+            this.refreshTable();
+            this.$Message["success"]({
+              background: true,
+              content: "操作成功！",
+            });
+
+            this.addNodeShow = false;
+          } else {
+            throw new Error(res.data.msg);
           }
         })
         .catch((err) => {
@@ -369,8 +581,8 @@ export default {
       };
     },
     handleOpen() {
-        this.openCesiumLabShow = false;
-        window.open("http://202.194.14.204:8080/vw/Apps/Demos/Viewer/index.html");
+      this.openCesiumLabShow = false;
+      window.open("http://202.194.14.204:8080/vw/Apps/Demos/Viewer/index.html");
     },
     //标绘打开新页面
     openCesiumLab() {
@@ -465,11 +677,13 @@ export default {
     // 修改路径信息
     updateInfo(row, index) {
       this.msg = row;
+      this.updatePathId = row.pathId;
       this.form = {
         pathName: row.pathName,
         campusId: row.campusId,
         pathMsg: row.data,
       };
+      this.pathNodesArr = row.pathNodes;
       this.updateVisible = true;
     },
 
@@ -559,6 +773,56 @@ export default {
         },
       });
     },
+    /**
+     * 删除路径节点
+     */
+    deleteNode(row, index) {
+      this.$confirm("是否删除节点及其相关信息？", "注意", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.handleDeletePathNode(row.id);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    /**
+     * 删除虚拟漫游路径中的节点
+     */
+    handleDeletePathNode(id) {
+      this.$axios({
+        url: this.$store.state.UrlIP + "/vr/pathNode/delData",
+        method: "post",
+        params: {
+          id: id,
+          token: window.localStorage.getItem("Authorization"),
+        },
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      })
+        .then((res) => {
+          if (res.data.code == 0) {
+            this.refreshTable();
+            this.$Message["success"]({
+              background: true,
+              content: "操作成功！",
+            });
+          }
+        })
+        .catch((err) => {
+          this.$Message["error"]({
+            background: true,
+            content: err,
+          });
+        });
+    },
     handleDelete(pathId) {
       this.$axios({
         url: this.$store.state.UrlIP + "/vr/path/updateData",
@@ -621,5 +885,10 @@ export default {
   position: relative;
   cursor: text;
   transition: border 0.2s ease-in-out, backgrou;
+}
+.path-node-table {
+  height: 400px;
+  overflow: scroll;
+  overflow-x: hidden;
 }
 </style>

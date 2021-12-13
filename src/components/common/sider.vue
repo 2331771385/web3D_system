@@ -152,33 +152,6 @@ export default {
                     ]
                 },
                 {
-                    icon: 'el-icon-s-data',
-                    index: 'statistics',
-                    title: '访问数据管理',
-                    children:[
-                        {
-                            index:'statistics',
-                            title:'访问统计'
-                        },
-                        {
-                            index:'dailyVisit',
-                            title:'日访问量'
-                        },
-                        {
-                            index:'dailyVisit',
-                            title:'校区访问统计'
-                        },
-                        {
-                            index:'dailyVisit',
-                            title:'校区模块统计'
-                        },
-                        {
-                            index:'dailyVisit',
-                            title:'模块热点统计'
-                        }
-                    ]
-                },
-                {
                     icon:'el-icon-setting',
                     index:'system',
                     title:'系统设置',

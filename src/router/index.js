@@ -153,26 +153,7 @@ const freeRoute = [
           title: '登录历史',
           // icon:'el-icon-setting'
         }
-      },
-      {
-        path: '/statistics',
-        name: "statistics",
-        component: resolve => require(['../components/views/statistics/index.vue'], resolve),
-        meta: {
-          title: '访问统计',
-          // icon:'el-icon-setting'
-        }
-      },
-      // dailyVisit
-      {
-        path: '/dailyVisit',
-        name: "dailyVisit",
-        component: resolve => require(['../components/views/statistics/statistics-dailyVisit.vue'], resolve),
-        meta: {
-          title: '日访问量',
-          // icon:'el-icon-setting'
-        }
-      },
+      }
     ]
   }
 ]
