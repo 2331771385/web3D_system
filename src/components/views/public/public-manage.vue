@@ -448,8 +448,8 @@ export default {
                 if (res.data.code==0) {
                     this.dataList=res.data.data;
                     this.dataList.forEach(item => {
-                        item.picUrl = `http://202.194.14.204:8082${item.picUrl}`;
-                        item.iconUrl = `http://202.194.14.204:8082${item.iconUrl}`
+                        item.picUrl = `http://202.194.14.238:8082${item.picUrl}`;
+                        item.iconUrl = `http://202.194.14.238:8082${item.iconUrl}`
                     })
                     this.totalCount=res.data.respPage.totalCount
                 }
