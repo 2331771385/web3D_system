@@ -189,30 +189,33 @@
         </el-form-item>
       </el-form>
       <!-- 列表数据 -->
-      <Table border :columns="updateColumns" :data="pathNodesArr">
-        <template slot-scope="{ row }" slot="createTime">
-          <font v-if="row.createTime == null || row.createTime == undefined"
-            >-</font
-          >
-          <font v-else>{{ row.createTime }}</font>
-        </template>
+      <div class="update-dialog-table">
+        <Table border :columns="updateColumns" :data="pathNodesArr">
+          <template slot-scope="{ row }" slot="createTime">
+            <font v-if="row.createTime == null || row.createTime == undefined"
+              >-</font
+            >
+            <font v-else>{{ row.createTime }}</font>
+          </template>
 
-        <template slot-scope="{ row }" slot="updateTime">
-          <font v-if="row.updateTime == null || row.updateTime == undefined">{{
-            row.createTime
-          }}</font>
-          <font v-else>{{ row.updateTime }}</font>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <Button
-            type="error"
-            size="small"
-            style="marginright: 5px"
-            @click="deleteNode(row, index)"
-            >删除</Button
-          >
-        </template>
-      </Table>
+          <template slot-scope="{ row }" slot="updateTime">
+            <font
+              v-if="row.updateTime == null || row.updateTime == undefined"
+              >{{ row.createTime }}</font
+            >
+            <font v-else>{{ row.updateTime }}</font>
+          </template>
+          <template slot-scope="{ row, index }" slot="action">
+            <Button
+              type="error"
+              size="small"
+              style="marginright: 5px"
+              @click="deleteNode(row, index)"
+              >删除</Button
+            >
+          </template>
+        </Table>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button class="tableBtn" type="success" @click="addNodes()"
           >添加节点</el-button
@@ -557,7 +560,7 @@ export default {
             this.addNodeShow = false;
           } else {
             alert("插入重复节点");
-            throw new Error(res.data.msg);         
+            throw new Error(res.data.msg);
           }
         })
         .catch((err) => {
@@ -850,6 +853,11 @@ export default {
 .ivu-icon-ios-apps {
   float: left !important;
   margin-top: 2px !important;
+}
+.update-dialog-table {
+  height: 300px;
+  overflow: scroll;
+  overflow-x: hidden;
 }
 </style>
 <style>
