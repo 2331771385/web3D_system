@@ -36,7 +36,7 @@ import {
 import { LabelLayout, UniversalTransition } from 'echarts/features';
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from 'echarts/renderers';
-import Web3dSdkPc from 'web3d_sdk/dist/Web3dSdkPc';
+// import Web3dSdkPc from 'web3d_sdk/dist/Web3dSdkPc';
 
 // 注册必须的组件
 echarts.use([
@@ -103,8 +103,8 @@ Vue.use(ViewUI)
 /* eslint-disable no-new */
 
 // 初始化sdk
-export const web3dSdk = new Web3dSdkPc();
-web3dSdk.initSdk();
+// export const web3dSdk = new Web3dSdkPc();
+// web3dSdk.initSdk();
 
 new Vue({
   el: '#app',

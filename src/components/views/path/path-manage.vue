@@ -147,7 +147,7 @@
     </el-dialog>
 
     <!-- 修改路径 -->
-    <el-dialog title="修改路径信息" :visible.sync="updateVisible">
+    <el-dialog title="修改路径信息" :visible.sync="updateVisible" width="500px">
       <el-form
         :model="form"
         ref="form"
@@ -155,44 +155,38 @@
         :rules="rules2"
         class="demo-ruleForm"
       >
-        <el-row :gutter="20">
-          <el-col :span="10">
-            <el-form-item label="校区名称:" prop="campusId">
-              <el-select
-                disabled
-                v-model="form.campusId"
-                style="width: 250px; margin-bottom: 5px"
-              >
-                <el-option
-                  v-for="item in campusList"
-                  :key="item.id"
-                  :label="'[' + item.id + ']' + item.campusName"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="路径名称:" prop="pathName">
-              <el-input
-                v-model="form.pathName"
-                placeholder="路径名称"
-                style="width: 250px; margin-bottom: 5px"
-                clearable
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="路径信息:">
-              <el-input
-                v-model="form.pathMsg"
-                placeholder="路径信息"
-                style="width: 250px; margin-bottom: 5px"
-                clearable
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="校区名称:" prop="campusId">
+          <el-select
+            disabled
+            v-model="form.campusId"
+            style="width: 250px; margin-bottom: 5px"
+          >
+            <el-option
+              v-for="item in campusList"
+              :key="item.id"
+              :label="'[' + item.id + ']' + item.campusName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="路径名称:" prop="pathName">
+          <el-input
+            v-model="form.pathName"
+            placeholder="路径名称"
+            style="width: 250px; margin-bottom: 5px"
+            clearable
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="路径信息:">
+          <el-input
+            v-model="form.pathMsg"
+            placeholder="路径信息"
+            style="width: 250px; margin-bottom: 5px"
+            clearable
+          ></el-input>
+        </el-form-item>
       </el-form>
       <!-- 列表数据 -->
       <Table border :columns="updateColumns" :data="pathNodesArr">
@@ -294,20 +288,20 @@ export default {
         {
           title: "途经节点",
           key: "pathNodesStr",
-          minWidth: 200,
+          minWidth: 250,
           align: "center",
         },
         {
           title: "创建时间",
           slot: "createTime",
-          minWidth: 100,
+          minWidth: 80,
           // width:'160px',
           align: "center",
         },
         {
           title: "修改时间",
           slot: "updateTime",
-          minWidth: 100,
+          minWidth: 80,
           // width:'160px',
           align: "center",
         },
@@ -347,21 +341,21 @@ export default {
           width: "170px",
           align: "center",
         },
-        {
-          title: "修改时间",
-          key: "updateTime",
-          //  minWidth: 90,
-          width: "180px",
-          align: "center",
-        },
-        {
-          title: "节点信息",
-          key: "data",
-          minWidth: 90,
-          // width: "200px",
-          align: "center",
-          ellipsis: true,
-        },
+        // {
+        //   title: "修改时间",
+        //   key: "updateTime",
+        //   //  minWidth: 90,
+        //   width: "180px",
+        //   align: "center",
+        // },
+        // {
+        //   title: "节点信息",
+        //   key: "data",
+        //   minWidth: 90,
+        //   // width: "200px",
+        //   align: "center",
+        //   ellipsis: true,
+        // },
         {
           title: "操作",
           width: "90px",
@@ -560,10 +554,10 @@ export default {
               background: true,
               content: "操作成功！",
             });
-
             this.addNodeShow = false;
           } else {
-            throw new Error(res.data.msg);
+            alert("插入重复节点");
+            throw new Error(res.data.msg);         
           }
         })
         .catch((err) => {
