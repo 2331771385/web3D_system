@@ -137,6 +137,10 @@ export default {
                         {
                             index:'path-manage',
                             title:'路径数据管理'
+                        },
+                        {
+                            index:'model-manage',
+                            title:'模型数据管理'
                         }
                     ]
                 },

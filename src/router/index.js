@@ -103,11 +103,11 @@ const freeRoute = [
         }
       },
       {
-        path: '/path-manage',
-        name: "path-manage",
-        component: resolve => require(['../components/views/path/path-manage.vue'], resolve),
+        path: '/model-manage',
+        name: "model-manage",
+        component: resolve => require(['../components/views/path/model-manage.vue'], resolve),
         meta: {
-          title: '访问数据管理',
+          title: '模型数据管理',
           // icon:'el-icon-setting'
         }
       },
