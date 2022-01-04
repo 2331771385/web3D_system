@@ -239,7 +239,7 @@
 <script>
 import axios from "axios";
 export default {
-  name: "path-manage",
+  name: "model-manage",
   data() {
     return {
       dataList: [],

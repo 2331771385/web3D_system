@@ -34,18 +34,14 @@
           >查找</Button
         >
         <Button type="success" @click="addInfo" icon="ios-add">新增</Button>
-        <Button type="primary" @click="openCesiumLab" icon="el-icon-edit"
-          >标注</Button
-        >
       </div>
     </div>
 
     <!-- 列表数据 -->
     <Table border :columns="columns" :data="dataList">
       <template slot-scope="{ row }" slot="state">
-        <font v-if="row.state == 0" color="green">正常</font>
-        <font v-else-if="row.state == 1" color="orange">暂停</font>
-        <font v-else color="red">删除</font>
+        <font v-if="row.data != ''" color="green">正常</font>
+        <font v-else color="orange">未标注</font>
       </template>
 
       <template slot-scope="{ row }" slot="createTime">
@@ -63,6 +59,13 @@
       </template>
 
       <template slot-scope="{ row, index }" slot="action">
+        <Button
+          type="primary"
+          @click="handleOpen(row, index)"
+          size="small"
+          style="marginright: 5px"
+          >标注</Button
+        >
         <Button
           type="info"
           size="small"
@@ -130,7 +133,7 @@
         <el-form-item label="路径信息:">
           <el-input
             v-model="form.pathMsg"
-            placeholder="路径信息"
+            placeholder="可稍后可视化标注，也可直接输入json"
             style="width: 300px; margin-bottom: 5px"
             clearable
           ></el-input>
@@ -252,24 +255,14 @@
         <el-button @click="addNodeShow = false">取消</el-button>
       </span>
     </el-dialog>
-
-    <el-dialog
-      title="提示: 复制模型链接确认后进入标绘"
-      :visible.sync="openCesiumLabShow"
-      width="30%"
-    >
-      <span>{{ campusUrl }}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="openCesiumLabShow = false">取 消</el-button>
-        <el-button type="primary" @click="handleOpen">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
 import axios from "axios";
+import VModelManage from "./path-edit.vue";
 export default {
   name: "path-manage",
+  components: { VModelManage },
   data() {
     return {
       dataList: [],
@@ -317,7 +310,7 @@ export default {
         },
         {
           title: "操作",
-          width: "160px",
+          width: "250px",
           slot: "action",
           align: "center",
         },
@@ -392,7 +385,6 @@ export default {
       updateVisible: false,
       index: "",
       msg: "",
-      openCesiumLabShow: false,
       addNodeShow: false,
       pathNodeList: [],
       nodeSearchKey: "",
@@ -460,7 +452,7 @@ export default {
             if (res.data.code == 0) {
               this.dataList = res.data.data;
               for (let data of this.dataList) {
-                if (data.pathNodes.length == 0) {
+                if (data.pathNodes == null || data.pathNodes.length == 0) {
                   data.pathNodesStr = "-";
                   continue;
                 }
@@ -577,12 +569,10 @@ export default {
         pathMsg: "",
       };
     },
-    handleOpen() {
+
+    // 进入标注
+    handleOpen(row, index) {
       this.openCesiumLabShow = false;
-      window.open("http://202.194.14.204:8080/vw/Apps/Demos/Viewer/index.html");
-    },
-    //标绘打开新页面
-    openCesiumLab() {
       axios({
         url: this.$store.state.UrlIP + "/campus/getData",
         method: "get",
@@ -599,8 +589,14 @@ export default {
         .then((res) => {
           if (res.data.code == 0) {
             this.campusUrl = JSON.parse(res.data.data[0].data).czmObject.url;
-            // alert(this.campusUrl + "\n" + "复制模型连接后点击跳转");
-            this.openCesiumLabShow = true;
+            this.$router.push({
+              name: "path-edit",
+              params: {
+                pathId: row.pathId,
+                data: row.data,
+                campusUrl: this.campusUrl,
+              },
+            });
           }
         })
         .catch((err) => {

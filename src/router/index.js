@@ -112,6 +112,15 @@ const freeRoute = [
         }
       },
       {
+        path: '/path-edit',
+        name: "path-edit",
+        component: resolve => require(['../components/views/path/path-edit.vue'], resolve),
+        meta: {
+          title: '路径编辑管理',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
         path: '/video-manage',
         name: "video-manage",
         component: resolve => require(['../components/views/video/video-manage.vue'], resolve),
