@@ -72,6 +72,13 @@
 
       <template slot-scope="{ row, index }" slot="action">
         <Button
+          type="primary"
+          size="small"
+          style="marginright: 5px"
+          @click="seeModel(row, index)"
+          >预览</Button
+        >
+        <Button
           type="info"
           size="small"
           style="marginright: 5px"
@@ -188,7 +195,7 @@
       </el-form>
 
       <!-- 列表数据 -->
-      
+
       <span slot="footer" class="dialog-footer">
         <el-button class="tableBtn" type="primary" @click="saveUpdate('form')"
           >确定</el-button
@@ -223,16 +230,10 @@
       </span>
     </el-dialog>
 
-    <el-dialog
-      title="提示: 复制模型链接确认后进入标绘"
-      :visible.sync="openCesiumLabShow"
-      width="30%"
-    >
-      <span>{{ campusUrl }}</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="openCesiumLabShow = false">取 消</el-button>
-        <el-button type="primary" @click="handleOpen">确 定</el-button>
-      </span>
+    <el-dialog title="模型预览" :visible.sync="openModelShow">
+      <div style="width: 100%; height: 100%">
+        <div ref="earthContainer" style="width: 100%; height: 100%"></div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -289,7 +290,7 @@ export default {
         },
         {
           title: "操作",
-          width: "160px",
+          width: "200px",
           slot: "action",
           align: "center",
         },
@@ -349,10 +350,11 @@ export default {
       updateVisible: false,
       index: "",
       msg: "",
-      openCesiumLabShow: false,
+      openModelShow: false,
       addNodeShow: false,
       pathNodeList: [],
       nodeSearchKey: "",
+      _earth: undefined,
     };
   },
   created() {
@@ -598,9 +600,46 @@ export default {
         }
       });
     },
-
+    //预览模型
+    seeModel(row, index) {
+      this.openModelShow = true;
+      XE.ready().then(() => {
+        this.initModel(row);
+      });
+    },
+    initModel(row) {
+      var earth = new XE.Earth(this.$refs.earthContainer);
+      earth.xbsjFromJSON({
+        sceneTree: {
+          root: {
+            children: [
+              {
+                czmObject: {
+                  xbsjType: "Model",
+                  url: this.$store.state.UrlIP + row.modelUrl,
+                  minimumPixelSize: 128,
+                  maximumScale: 20000,
+                  xbsjPosition: [2.0313887163962, 0.6963863715457375, 41.7],
+                },
+              },
+            ],
+          },
+        },
+      });
+      earth.camera.position = [
+        2.031389965604565, 0.6963871263364501, 47.8132346584046,
+      ];
+      earth.camera.rotation = [
+        4.023662462923287, -0.5967373117065744, 6.280106435064781,
+      ];
+      this._earth = earth;
+    },
     // 修改模型信息
     updateInfo(row, index) {
+      if (row.id == 1) {
+        this.$message("默认模型无法更改");
+        return;
+      }
       this.msg = row;
       this.updatePathId = row.id;
       this.form = {
@@ -682,7 +721,10 @@ export default {
     },
     // 删除操作
     deleteInfo(row, index) {
-      console.log(row);
+      if (row.id == 1) {
+        this.$message("默认模型无法更改");
+        return;
+      }
       this.$Modal.confirm({
         title: "注意",
         content: "是否删除模型及其相关信息？",
