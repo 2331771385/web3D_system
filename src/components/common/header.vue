@@ -113,7 +113,7 @@ export default {
   },
   created() {
     this.recentLoginName=localStorage.getItem("UserName");
-    console.log(this.recentLoginName);
+    // console.log(this.recentLoginName);
   },
   watch: {
     showIcon: function (newVal, oldVal) {

@@ -185,7 +185,7 @@ export default {
                 if (valid) {
                     this.$emit('updSuccess',this.tempObj)
                 }else{
-                    console.log(this.tempShow);
+                    //console.log(this.tempShow);
                     this.$Message.console.error(('ERROR'));
                 }
             })

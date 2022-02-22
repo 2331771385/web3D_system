@@ -82,6 +82,7 @@ export default {
           icon: "el-icon-news",
           // index: 'home',
           title: "首页",
+          index: "homePage"
         },
 
         {
@@ -126,21 +127,21 @@ export default {
           ],
         },
 
-        {
-          icon: "el-icon-news",
-          index: "public",
-          title: "公共服务管理",
-          children: [
-            {
-              index: "public-manage",
-              title: "公共服务管理",
-            },
-            {
-              index: "public-sort",
-              title: "公共服务分类管理",
-            },
-          ],
-        },
+        // {
+        //   icon: "el-icon-news",
+        //   index: "public",
+        //   title: "公共服务管理",
+        //   children: [
+        //     {
+        //       index: "public-manage",
+        //       title: "公共服务管理",
+        //     },
+        //     {
+        //       index: "public-sort",
+        //       title: "公共服务分类管理",
+        //     },
+        //   ],
+        // },
         {
           icon: "el-icon-news",
           index: "path",
@@ -160,26 +161,26 @@ export default {
             // },
           ],
         },
-        {
-          icon: "el-icon-news",
-          index: "video",
-          title: "设备管理",
-          children: [
-            {
-              index: "video-manage",
-              title: "监控数据管理",
-            },
-          ],
-        },
+        // {
+        //   icon: "el-icon-news",
+        //   index: "video",
+        //   title: "设备管理",
+        //   children: [
+        //     {
+        //       index: "video-manage",
+        //       title: "监控数据管理",
+        //     },
+        //   ],
+        // },
         {
           icon: "el-icon-setting",
           index: "system",
           title: "系统设置",
           children: [
-            {
-              index: "role",
-              title: "角色管理",
-            },
+            // {
+            //   index: "role",
+            //   title: "角色管理",
+            // },
             {
               index: "admin",
               title: "管理员设置",

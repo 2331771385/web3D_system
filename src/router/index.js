@@ -15,17 +15,26 @@ const freeRoute = [
     path: '/login',
     // component: resolve => require(['../components/views/account/login.vue'], resolve)
     component: () => import("../components/views/account/login.vue")
-
   },
   {
     path: '/home',
     name: 'home',
+    redirect: "/homePage",
     component: resolve => require(['../components/common/home.vue'], resolve),
     children: [
       {
         path: '/headIndex',
         name: "headIndex",
         component: resolve => require(['../components/views/headerIndex/headIndex.vue'], resolve),
+        meta: {
+          title: '首页',
+          // icon:'el-icon-setting'
+        }
+      },
+      {
+        path: '/homePage',
+        name: "homePage",
+        component: resolve => require(['../components/views/home-page.vue'], resolve),
         meta: {
           title: '首页',
           // icon:'el-icon-setting'
