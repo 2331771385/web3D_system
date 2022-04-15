@@ -308,17 +308,13 @@ router.beforeEach((to, from, next) => {
     //   }
     // }
   } else {
-    next()
-    // router.replace('/login')
     //如果在白名单里面，就直接放行
-    // if (whiteList.indexOf(to.path) >= 0) {
-    //   console.log('放行');
-    //   next()
-    // } else {
-    //   console.log('拦截');
-    //   //如果不在登录页里面，就返回到登录页
-    //   router.replace('/login')
-    // }
+    if (whiteList.indexOf(to.path) >= 0) {
+      next();
+    } else {
+      //如果不在登录页里面，就返回到登录页
+      router.replace('/login');
+    }
   }
 })
 

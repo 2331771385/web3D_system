@@ -55,7 +55,7 @@
           <div class="opeBox-checkBox">
             <Checkbox v-model="form.checked">记住密码</Checkbox>
           </div>
-          <span @click="forgetPwd">忘记密码</span>
+          <!-- <span @click="forgetPwd">忘记密码</span> -->
         </div>
         <FormItem>
           <Button
@@ -197,7 +197,7 @@ export default {
           })
             .then((res) => {
               this.isShowLoading = false;
-              if (res.data.code == 0 || res.data.code==202) {
+              if (res.data.code == 0 || res.data.code == 202) {
                 if (this.form.checked) {
                   //如果勾选了记住密码选项，就调用设置cookie的方法,第三个参数是记住密码时长
                   this.setCookie(
@@ -223,7 +223,7 @@ export default {
                   UserID: this.userId,
                   PassWord: this.form.loginPassword,
                   UserName: this.form.loginName,
-                  PermissionList:this.permissionList
+                  PermissionList: this.permissionList,
                 });
                 if (this.userToken) {
                   this.$router.push("/home");
@@ -240,6 +240,7 @@ export default {
             });
         } else {
           this.$Message.error("请检查用户名及密码!");
+          this.getValidateCode();
         }
       });
     },
